@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>TNF Chile — Encuentra tu calzado</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Barlow',sans-serif;background:#f5f5f5;min-height:100vh;display:flex;justify-content:center;padding:2rem 1rem}
+.finder{width:100%;max-width:780px;background:#fff}
+
+/* Top bar */
+.topbar{background:#0D0D0D;padding:12px 20px;display:flex;align-items:center;gap:10px}
+.logo{color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:16px;letter-spacing:0.1em}
+.logo span{color:#E31837}
+.topbar-sub{color:rgba(255,255,255,0.45);font-size:12px;letter-spacing:0.04em}
+
+/* Progress */
+.prog-wrap{padding:18px 20px 0;border-bottom:none}
+.prog-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.prog-label{font-size:11px;color:#999;letter-spacing:0.06em;text-transform:uppercase}
+.prog-dots{display:flex;gap:5px}
+.pd{width:7px;height:7px;border-radius:50%;background:#DDD;transition:all 0.22s}
+.pd.on{width:24px;border-radius:3px;background:#E31837}
+.pd.dn{background:#888}
+
+/* Breadcrumb */
+.breadcrumb{min-height:24px;padding:6px 20px 0;display:flex;align-items:center;gap:0;flex-wrap:wrap}
+.bc-item{font-size:11px;color:#999;letter-spacing:0.02em}
+.bc-item.active{color:#0D0D0D;font-weight:500}
+.bc-sep{font-size:11px;color:#CCC;padding:0 5px}
+
+/* Steps */
+.step{display:none}
+.step.active{display:block;animation:fi 0.28s ease forwards}
+@keyframes fi{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* Step header */
+.shead{text-align:center;padding:18px 20px 14px}
+.stitle{font-family:'Barlow Condensed',sans-serif;font-size:30px;font-weight:700;color:#0D0D0D;letter-spacing:0.02em;text-transform:uppercase;line-height:1}
+.ssub{font-size:13px;color:#888;margin:6px auto 0;max-width:480px;line-height:1.55}
+
+/* Option grid */
+.og{display:grid;gap:3px;margin:0 0 0}
+.oc{background:#0D0D0D;min-height:132px;padding:1.6rem 1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:0.6rem;border:2px solid transparent;transition:border-color 0.13s,filter 0.15s;text-align:center;position:relative;overflow:hidden}
+.oc:hover{filter:brightness(1.15)}
+.oc.sel{border-color:#E31837}
+.oc.sel::after{content:"✓";position:absolute;top:8px;right:10px;color:#E31837;font-size:14px;font-weight:700;font-family:'Barlow Condensed',sans-serif}
+.oc.disabled{filter:brightness(0.45);cursor:not-allowed;pointer-events:none}
+.oic{color:#fff;font-size:26px;line-height:1}
+.ol{font-family:'Barlow Condensed',sans-serif;color:#fff;font-size:15px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase}
+.os{color:rgba(255,255,255,0.38);font-size:11px;margin-top:1px}
+
+/* Skip link */
+.skip-wrap{text-align:center;padding:10px 0 4px}
+.skip-link{background:none;border:none;color:#888;font-size:12px;cursor:pointer;font-family:'Barlow',sans-serif;letter-spacing:0.04em;text-decoration:underline;padding:6px 12px}
+.skip-link:hover{color:#333}
+
+/* Count bar */
+.cbar{text-align:center;font-size:12px;color:#999;padding:10px;border-top:1px solid #F0F0F0;letter-spacing:0.04em;transition:opacity 0.2s}
+.cbar b{color:#0D0D0D;font-size:14px;font-family:'Barlow Condensed',sans-serif}
+
+/* Nav */
+.navrow{padding:12px 20px 0;display:flex;align-items:center}
+.btnback{background:transparent;border:1px solid #DDD;color:#555;padding:6px 16px;border-radius:20px;cursor:pointer;font-size:12px;font-family:'Barlow',sans-serif;display:inline-flex;align-items:center;gap:6px;transition:border-color 0.13s,color 0.13s}
+.btnback:hover{border-color:#999;color:#0D0D0D}
+.btnback i{font-size:13px}
+
+/* Features step */
+.feat-meta{display:flex;justify-content:space-between;align-items:center;padding:4px 20px 8px}
+.feat-hint{font-size:12px;color:#999;letter-spacing:0.04em}
+.feat-max{font-size:11px;color:#E31837;font-weight:500;opacity:0;transition:opacity 0.2s}
+.feat-max.show{opacity:1}
+.oc.feat-disabled{filter:brightness(0.4);cursor:not-allowed;pointer-events:none}
+
+.feat-cta{text-align:center;padding:14px 20px 6px}
+.btnver{background:#E31837;color:#fff;border:none;padding:12px 40px;border-radius:2px;font-size:15px;font-weight:700;font-family:'Barlow Condensed',sans-serif;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;transition:background 0.15s;width:100%}
+.btnver:hover{background:#C01020}
+
+/* PLP */
+.plp-wrap{padding:16px 20px 0}
+.plp-top{display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:6px}
+.plp-title{font-family:'Barlow Condensed',sans-serif;font-size:24px;font-weight:700;color:#0D0D0D;letter-spacing:0.04em;text-transform:uppercase}
+.plp-range{font-size:12px;color:#999;margin-top:2px}
+.plp-restart{background:none;border:none;color:#888;font-size:12px;cursor:pointer;font-family:'Barlow',sans-serif;text-decoration:underline}
+.plp-restart:hover{color:#0D0D0D}
+.pill-row{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0;border-bottom:1px solid #F0F0F0;padding-bottom:10px}
+.pill{border:1px solid #DDD;background:transparent;color:#666;padding:5px 14px;border-radius:20px;font-size:12px;cursor:pointer;font-family:'Barlow',sans-serif;display:inline-flex;align-items:center;gap:5px;transition:border-color 0.13s,color 0.13s}
+.pill:hover{border-color:#999;color:#0D0D0D}
+.pill.active{border-color:#0D0D0D;color:#0D0D0D;background:#F5F5F5}
+.sort-pill{margin-left:auto}
+
+/* Product grid */
+.pgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding-bottom:24px}
+.pcard{background:#fff;border:1px solid #EBEBEB;border-radius:2px;overflow:hidden;cursor:pointer;transition:border-color 0.13s,box-shadow 0.13s;display:flex;flex-direction:column}
+.pcard:hover{border-color:#CCC;box-shadow:0 2px 12px rgba(0,0,0,0.07)}
+.pimg{width:100%;aspect-ratio:1;background:#F5F5F5;overflow:hidden;position:relative}
+.pimg img{width:100%;height:100%;object-fit:cover;transition:transform 0.25s}
+.pcard:hover .pimg img{transform:scale(1.04)}
+.pimg-fallback{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:28px;background:linear-gradient(135deg,#1a1a1a 0%,#333 100%)}
+.pbody{padding:10px 12px 12px;flex:1;display:flex;flex-direction:column;gap:4px}
+.pname{font-size:12px;font-weight:500;color:#0D0D0D;line-height:1.35}
+.pprice{font-family:'Barlow Condensed',sans-serif;font-size:15px;color:#0D0D0D;letter-spacing:0.02em;font-weight:600}
+.ptags{display:flex;gap:4px;flex-wrap:wrap;margin-top:4px}
+.ptag{background:#F5F5F5;color:#666;font-size:10px;padding:2px 7px;border-radius:2px;letter-spacing:0.02em}
+.ptag.match{background:#FFF0F0;color:#C00}
+.plink{display:block;text-align:center;padding:8px;background:#0D0D0D;color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;text-decoration:none;margin-top:auto;transition:background 0.13s}
+.plink:hover{background:#E31837}
+
+/* Empty state */
+.empty-state{grid-column:1/-1;text-align:center;padding:3rem 1rem}
+.empty-state h4{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;margin-bottom:8px}
+.empty-state p{font-size:13px;color:#888;margin-bottom:16px}
+.btnrestart{background:#0D0D0D;color:#fff;border:none;padding:10px 28px;border-radius:2px;font-size:13px;font-weight:600;font-family:'Barlow Condensed',sans-serif;letter-spacing:0.07em;text-transform:uppercase;cursor:pointer}
+
+/* Gap notice */
+.gap-notice{background:#FFF8E1;border-left:3px solid #F9A825;padding:10px 16px;margin:0 0 12px;font-size:12px;color:#666}
+.gap-notice b{color:#0D0D0D}
+
+/* Responsive */
+@media(max-width:540px){
+  .pgrid{grid-template-columns:repeat(2,1fr)}
+  .stitle{font-size:24px}
+}
+</style>
+</head>
+<body>
+<div class="finder">
+
+  <!-- Top bar -->
+  <div class="topbar">
+    <span class="logo">THE NORTH FACE<span>®</span></span>
+    <span class="topbar-sub">/ Encuentra tu calzado ideal</span>
+  </div>
+
+  <!-- Progress -->
+  <div class="prog-wrap">
+    <div style="padding:12px 20px 0">
+      <div class="prog-row">
+        <span class="prog-label" id="step-label">Paso 1 de 4</span>
+        <div class="prog-dots" id="prog">
+          <div class="pd on" data-s="1"></div>
+          <div class="pd" data-s="2"></div>
+          <div class="pd" data-s="3"></div>
+          <div class="pd" data-s="4"></div>
+        </div>
+      </div>
+    </div>
+    <div class="breadcrumb" id="bc"></div>
+  </div>
+
+  <!-- STEP 1: Actividad -->
+  <div class="step active" id="s1">
+    <div class="shead">
+      <h2 class="stitle">Selecciona tu actividad</h2>
+      <p class="ssub">Desde excursiones en la montaña hasta paseos por la ciudad, contamos con el calzado ideal para ti.</p>
+    </div>
+    <div class="og" style="grid-template-columns:repeat(3,1fr)">
+      <div class="oc" data-val="senderismo" onclick="p1(this)">
+        <svg class="oic" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 17l5-10 4 6 3-4 6 8"/></svg>
+        <span class="ol">Senderismo</span>
+        <span class="os">Trekking &amp; hiking</span>
+      </div>
+      <div class="oc" data-val="trail-running" onclick="p1(this)">
+        <svg class="oic" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 4h3l-2 4h3l-5 8 1-5h-3z"/><circle cx="8" cy="8" r="2"/><path d="M6 12l-3 8"/></svg>
+        <span class="ol">Trail Running</span>
+        <span class="os">Carrera en montaña</span>
+      </div>
+      <div class="oc" data-val="lifestyle" onclick="p1(this)">
+        <svg class="oic" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="7" width="20" height="14" rx="1"/><path d="M16 7V5a2 2 0 00-4 0v2M8 7V5a2 2 0 00-4 0v2M2 11h20"/></svg>
+        <span class="ol">Lifestyle</span>
+        <span class="os">Uso urbano y casual</span>
+      </div>
+    </div>
+    <div class="cbar"><b id="c1">64</b> modelos disponibles</div>
+  </div>
+
+  <!-- STEP 2: Género -->
+  <div class="step" id="s2">
+    <div class="navrow"><button class="btnback" onclick="bk()">&#8592; Paso anterior</button></div>
+    <div class="shead">
+      <h2 class="stitle">¿Quién explorará?</h2>
+      <p class="ssub">Nuestro calzado está diseñado para hombres y mujeres.</p>
+    </div>
+    <div class="og" style="grid-template-columns:repeat(2,1fr)">
+      <div class="oc" data-val="hombres" onclick="p2(this)">
+        <svg class="oic" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+        <span class="ol">Hombres</span>
+      </div>
+      <div class="oc" data-val="mujeres" onclick="p2(this)">
+        <svg class="oic" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/><path d="M12 17v4M10 19h4" opacity=".6"/></svg>
+        <span class="ol">Mujeres</span>
+      </div>
+    </div>
+    <div class="cbar"><b id="c2">—</b> modelos disponibles</div>
+  </div>
+
+  <!-- STEP 3: Terreno -->
+  <div class="step" id="s3">
+    <div class="navrow"><button class="btnback" onclick="bk()">&#8592; Paso anterior</button></div>
+    <div class="shead">
+      <h2 class="stitle">¿Dónde explorarás?</h2>
+      <p class="ssub">Optimizamos nuestro calzado para diferentes tipos de terrenos. ¿Dónde lo usarás más?</p>
+    </div>
+    <div id="gap-notice" style="display:none" class="gap-notice" style="margin:0 0 0"></div>
+    <div class="og" id="tg"></div>
+    <div class="skip-wrap"><button class="skip-link" onclick="skipTerrain()">Saltar este paso →</button></div>
+    <div class="cbar"><b id="c3">—</b> modelos disponibles</div>
+  </div>
+
+  <!-- STEP 4: Funcionalidades -->
+  <div class="step" id="s4">
+    <div class="navrow"><button class="btnback" onclick="bk()">&#8592; Paso anterior</button></div>
+    <div class="shead">
+      <h2 class="stitle">¿Qué funcionalidad necesitas?</h2>
+      <p class="ssub">Elige hasta cuatro características que priorices en tu calzado.</p>
+    </div>
+    <div class="feat-meta">
+      <span class="feat-hint" id="fh">0 de 4 seleccionadas</span>
+      <span class="feat-max" id="fmax">Máximo alcanzado</span>
+    </div>
+    <div class="og" id="fg" style="grid-template-columns:repeat(3,1fr)"></div>
+    <div class="skip-wrap"><button class="skip-link" onclick="skipFeats()">Saltar este paso →</button></div>
+    <div class="feat-cta" id="fc" style="display:none">
+      <button class="btnver" onclick="showPLP()">Ver resultados &#8594;</button>
+    </div>
+    <div class="cbar"><b id="c4">—</b> modelos disponibles</div>
+  </div>
+
+  <!-- STEP 5: PLP -->
+  <div class="step" id="s5">
+    <div class="navrow" style="justify-content:space-between">
+      <button class="btnback" onclick="bk()">&#8592; Paso anterior</button>
+      <button class="plp-restart" onclick="restart()">Comenzar de nuevo</button>
+    </div>
+    <div class="plp-wrap">
+      <div class="plp-top">
+        <div>
+          <h2 class="plp-title" id="pt">—</h2>
+          <p class="plp-range" id="prange">Descubre tu elección personalizada.</p>
+        </div>
+      </div>
+      <div class="pill-row">
+        <button class="pill" id="pill-asc" onclick="sortBy('asc')">Menor precio</button>
+        <button class="pill" id="pill-desc" onclick="sortBy('desc')">Mayor precio</button>
+        <button class="pill sort-pill active" id="pill-def" onclick="sortBy('def')">Relevancia</button>
+      </div>
+      <div class="pgrid" id="pgrid"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const PRODUCTS = [{"id":"NF00A1KS_NFKX7","name":"Botas Hombre Snowfuse","price":129990,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf00a1ks_nfkx7_1.jpg","url":"https://www.thenorthface.cl/botas-hombre-snowfuse-nf00a1ks-nfkx7","a":["senderismo"],"g":["hombres"],"t":["montana-alta"],"f":["impermeabilidad","adherencia","ligera","soporte","proteccion"],"cat":"NIEVE"},{"id":"NF0A3V14_NF8IZ","name":"Zapatos Truckee Mid Hombre","price":119990,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a3v14_nf8iz_1_1.jpg","url":"https://www.thenorthface.cl/men-s-truckee-mid-nf0a3v14-nf8iz","a":["senderismo"],"g":["hombres"],"t":["senderos-mixtos","montana-alta"],"f":["transpirable","adherencia","soporte"],"cat":"MEDIA MONTAÑA"},{"id":"NF0A3V15_NF8OO","name":"Zapatos Truckee Mid Mujer","price":119990,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a3v15_nf8oo_1_1.jpg","url":"https://www.thenorthface.cl/women-s-truckee-mid-nf0a3v15-nf8oo","a":["senderismo"],"g":["mujeres"],"t":["senderos-mixtos","montana-alta"],"f":["transpirable","adherencia","soporte"],"cat":"MEDIA MONTAÑA"},{"id":"NF0A3V1G_NFNY7","name":"Zapatillas Truckee Mujer","price":109990,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a3v1g_ny7_1.jpg","url":"https://www.thenorthface.cl/zapatilla-truckee-mujer-nf0a3v1g-nfny7","a":["senderismo"],"g":["mujeres"],"t":["senderos-mixtos"],"f":["transpirable","adherencia"],"cat":"TREKKING"},{"id":"NF0A47AA_NF3I0","name":"Sandalias Base Camp Flip-Flop Ii Hombre","price":44990,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a47aa_nf3i0_1_2.jpg","url":"https://www.thenorthface.cl/men-s-base-camp-flip-flop-ii-nf0a47aa-nf3i0","a":["lifestyle"],"g":["hombres"],"t":["urbano","viajes"],"f":["ligera","versatil"],"cat":"SANDALIAS"},{"id":"NF0A47AB_NFKY4","name":"Sandalias Base Camp Mini Ii Mujer","price":44990,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a47ab_ky4_2.jpg","url":"https://www.thenorthface.cl/sandalias-base-camp-mini-ii-mujer-nf0a47ab-nfky4","a":["lifestyle"],"g":["mujeres"],"t":["urbano","viajes"],"f":["ligera","versatil"],"cat":"SANDALIAS"},{"id":"NF0A4T2R_NFI85","name":"Sandalias Base Camp Slide Iii Hombre","price":44990,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a4t2r_nfi85_1_3.jpg","url":"https://www.thenorthface.cl/men-s-base-camp-slide-iii-nf0a4t2r-nfi85","a":["lifestyle"],"g":["hombres"],"t":["urbano","viajes"],"f":["ligera","versatil"],"cat":"SANDALIAS"},{"id":"NF0A4T2S_NFKY4","name":"Sandalias Base Camp Slide Iii Mujer","price":44990,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a4t2s_ky4_1.jpg","url":"https://www.thenorthface.cl/sandalias-base-camp-slide-iii-mujer-nf0a4t2s-nfky4","a":["lifestyle"],"g":["mujeres"],"t":["urbano","viajes"],"f":["ligera","versatil"],"cat":"SANDALIAS"},{"id":"NF0A4T3X_NFC9R","name":"Zapatos Sierra Mid Lace Wp Mujer","price":159990,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a4t3x_nfc9r_1_1.jpg","url":"https://www.thenorthface.cl/zapatos-sierra-mid-lace-wp-mujer-nf0a4t3x-nfc9r","a":["lifestyle","senderismo"],"g":["mujeres"],"t":["senderos-mixtos","urbano","viajes"],"f":["impermeabilidad","soporte","proteccion","comodidad","resistente-agua","versatil"],"cat":"CASUALES"},{"id":"NF0A52RB_NFGIP","name":"Zapatos Cragmont Mid Wp Mujer","price":129990,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a52rb_nfgip_1_1.jpg","url":"https://www.thenorthface.cl/women-s-cragmont-mid-wp-nf0a52rb-nfgip","a":["senderismo"],"g":["mujeres"],"t":["senderos-mixtos","montana-alta"],"f":["impermeabilidad","adherencia","soporte"],"cat":"MEDIA MONTAÑA"},{"id":"NF0A52RC_NF16Y","name":"Zapatillas Cragmont Wp Hombre","price":119990,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a52rc_nf16y_1_2.jpg","url":"https://www.thenorthface.cl/men-s-cragmont-wp-nf0a52rc-nf16y","a":["senderismo"],"g":["hombres"],"t":["rutas-tecnicas","senderos-mixtos"],"f":["impermeabilidad","adherencia"],"cat":"TREKKING"},{"id":"NF0A52RD_NF82P","name":"Zapatillas Cragmont Wp Mujer","price":119990,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a52rd_nf82p_1_1.jpg","url":"https://www.thenorthface.cl/women-s-cragmont-wp-nf0a52rd-nf82p","a":["senderismo"],"g":["mujeres"],"t":["rutas-tecnicas","senderos-mixtos"],"f":["impermeabilidad","adherencia"],"cat":"TREKKING"},{"id":"NF0A5JD1_NFF1T","name":"Zapatos Cragmont Mid Wp Hombre","price":129990,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a5jd1_nff1t_1_1.jpg","url":"https://www.thenorthface.cl/men-s-cragmont-mid-wp-nf0a5jd1-nff1t","a":["senderismo"],"g":["hombres"],"t":["senderos-mixtos","montana-alta"],"f":["impermeabilidad","adherencia","soporte"],"cat":"MEDIA MONTAÑA"},{"id":"NF0A5LVZ_NFKT0","name":"Botas Chilkat V 400 Wp Hombre","price":159990,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a5lvz_nfkt0_1_1.jpg","url":"https://www.thenorthface.cl/botas-chilkat-v-400-wp-hombre-nf0a5lvz-nfkt0","a":["senderismo"],"g":["hombres"],"t":["montana-alta"],"f":["impermeabilidad"],"cat":"NIEVE"},{"id":"NF0A5LW3_NFKT0","name":"Botas Chilkat V Lace Wp Hombre","price":149990,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a5lw3_kt0_1_1.jpg","url":"https://www.thenorthface.cl/botas-chilkat-v-lace-wp-hombre-nf0a5lw3-nfkt0","a":["senderismo"],"g":["hombres"],"t":["montana-alta"],"f":["impermeabilidad","adherencia","soporte"],"cat":"NIEVE"},{"id":"NF0A5LWD_NFR0G","name":"Botas Thermoball™ Lace Up Wp Mujer","price":149990,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a5lwd_r0g_1_1.jpg","url":"https://www.thenorthface.cl/botas-thermoball-lace-up-wp-mujer-nf0a5lwd-nfr0g","a":["lifestyle"],"g":["mujeres"],"t":["urbano","viajes"],"f":["comodidad","ligera","resistente-agua","versatil"],"cat":"CASUALES"},{"id":"NF0A5LWF_NFCIH","name":"Botas Thermoball Progressive Zip Ii Wp Mujer","price":149990,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a5lwf_nfcih_1_1.jpg","url":"https://www.thenorthface.cl/botas-thermoball-progressive-zip-ii-wp-mujer-nf0a5lwf-nfcih","a":["senderismo"],"g":["mujeres"],"t":["montana-alta"],"f":["impermeabilidad","ligera","proteccion"],"cat":"NIEVE"},{"id":"NF0A5LXF_NF8O2","name":"Botas Alpenglow V Wp Unisex","price":89990,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a5lxf_nf8o2_1_1.jpg","url":"https://www.thenorthface.cl/botas-alpenglow-v-wp-unisex-nf0a5lxf-nf8o2","a":["senderismo"],"g":["hombres","mujeres"],"t":["montana-alta"],"f":["impermeabilidad","adherencia","ligera","proteccion"],"cat":"NIEVE"},{"id":"NF0A7W4G_NFKT0","name":"Botas Storm Strike Iii Wp Hombre","price":149990,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a7w4g_kt0_1.jpg","url":"https://www.thenorthface.cl/bota-storm-strike-iii-wp-hombre-nf0a7w4g-nfkt0","a":["senderismo"],"g":["hombres"],"t":["montana-alta"],"f":["impermeabilidad","soporte"],"cat":"NIEVE"},{"id":"NF0A7W5X_NFKX7","name":"Botas Shellista V Lace Wp Unisex","price":99990,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a7w5x_nfkx7_1_1.jpg","url":"https://www.thenorthface.cl/botas-shellista-v-lace-wp-unisex-nf0a7w5x-nfkx7","a":["senderismo"],"g":["hombres","mujeres"],"t":["montana-alta"],"f":["impermeabilidad","adherencia","ligera","proteccion"],"cat":"NIEVE"},{"id":"NF0A8177_NFOIE","name":"Zapatos Back-To-Berkeley Iv Textile Wp Hombre","price":169990,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8177_nfoie_1_1.jpg","url":"https://www.thenorthface.cl/zapato-back-to-berkeley-iv-textile-wp-hombre-nf0a8177-nfoie","a":["lifestyle"],"g":["hombres"],"t":["urbano","viajes"],"f":["comodidad","transpirable","resistente-agua","versatil"],"cat":"CASUALES"},{"id":"NF0A817Q_NFKT0","name":"Zapatos Back-To-Berkeley Iv Leather Wp Hombre","price":179990,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a817q_nfkt0_1_1.jpg","url":"https://www.thenorthface.cl/zapato-back-to-berkeley-iv-leather-wp-hombre-nf0a817q-nfkt0","a":["lifestyle"],"g":["hombres"],"t":["urbano","viajes"],"f":["comodidad","transpirable","resistente-agua","versatil"],"cat":"CASUALES"},{"id":"NF0A818O_NF7O3","name":"Zapatos Hedgehog 3 Mid Wp Hombre","price":169990,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a818o_nf7o3_1_1.jpg","url":"https://www.thenorthface.cl/m-hedgehog-3-mid-wp-nf0a818o-nf7o3","a":["senderismo"],"g":["hombres"],"t":["senderos-mixtos","montana-alta"],"f":["impermeabilidad","transpirable","adherencia","soporte","proteccion"],"cat":"MEDIA MONTAÑA"},{"id":"NF0A818P_NF0ZP","name":"Zapatos Hedgehog 3 Mid Wp Mujer","price":169990,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a818p_nf0zp_1_1.jpg","url":"https://www.thenorthface.cl/zapato-hedgehog-3-mid-wp-mujer-nf0a818p-nf0zp","a":["senderismo"],"g":["mujeres"],"t":["senderos-mixtos","montana-alta"],"f":["impermeabilidad","transpirable","adherencia","soporte","proteccion"],"cat":"MEDIA MONTAÑA"},{"id":"NF0A818Q_NF7O3","name":"Zapatillas Hedgehog 3 Wp Hombre","price":159990,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a818q_nf7o3_1_2.jpg","url":"https://www.thenorthface.cl/m-hedgehog-3-wp-nf0a818q-nf7o3","a":["senderismo"],"g":["hombres"],"t":["rutas-tecnicas","senderos-mixtos"],"f":["impermeabilidad","transpirable","adherencia","proteccion"],"cat":"TREKKING"},{"id":"NF0A818R_NF0ZP","name":"Zapatillas Hedgehog 3 Wp Mujer","price":159990,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a818r_nf0zp_1_1.jpg","url":"https://www.thenorthface.cl/zapatilla-hedgehog-3-wp-mujer-nf0a818r-nf0zp","a":["senderismo"],"g":["mujeres"],"t":["rutas-tecnicas","senderos-mixtos"],"f":["impermeabilidad","transpirable","adherencia","proteccion"],"cat":"TREKKING"},{"id":"NF0A8191_NFC89","name":"Zapatillas Ultra 112 Wp Hombre","price":169990,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8191_nfc89_1_2.jpg","url":"https://www.thenorthface.cl/zapatillas-ultra-112-wp-hombre-nf0a8191-nfc89","a":["senderismo"],"g":["hombres"],"t":["rutas-tecnicas","senderos-mixtos"],"f":["impermeabilidad","transpirable","adherencia","soporte","proteccion"],"cat":"TREKKING"},{"id":"NF0A83MT_NFROE","name":"Zapatillas Verto Alpine Gore-Tex® Mujer","price":209990,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a83mt_nfroe_1_1.jpg","url":"https://www.thenorthface.cl/zapatillas-verto-alpine-gore-tex-mujer-nf0a83mt-nfroe","a":["senderismo"],"g":["mujeres"],"t":["rutas-tecnicas","senderos-mixtos"],"f":["impermeabilidad","transpirable","adherencia","ligera","soporte","proteccion"],"cat":"TREKKING"},{"id":"NF0A83NB_NFMN8","name":"Zapatos Verto Alpine Mid Gore-Tex® Hombre","price":239990,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a83nb_nfmn8_1_2.jpg","url":"https://www.thenorthface.cl/zapatos-verto-alpine-mid-gore-tex-hombre-nf0a83nb-nfmn8","a":["senderismo"],"g":["hombres"],"t":["senderos-mixtos","montana-alta"],"f":["impermeabilidad","adherencia","ligera","soporte","proteccion"],"cat":"MEDIA MONTAÑA"},{"id":"NF0A8A90_NF69Y","name":"Sandalias Never Stop Cush Slide","price":49990,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8a90_nf69y_1_1.jpg","url":"https://www.thenorthface.cl/sandalias-never-stop-cush-slide-nf0a8a90-nf69y","a":["lifestyle"],"g":["hombres"],"t":["urbano","viajes"],"f":["comodidad","versatil"],"cat":"SANDALIAS"},{"id":"NF0A8A9M_NFKX7","name":"Zapatos Bergen Leather Wp Hombre","price":179990,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8a9m_nfkx7_1_1.jpg","url":"https://www.thenorthface.cl/zapatos-bergen-leather-wp-hombre-nf0a8a9m-nfkx7","a":["lifestyle"],"g":["hombres"],"t":["urbano","viajes"],"f":["resistente-agua","versatil"],"cat":"CASUALES"},{"id":"NF0A8A9R_NF926","name":"Zapatillas Altamesa 300 Hombre","price":149990,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8a9r_nf926_1_2.jpg","url":"https://www.thenorthface.cl/zapatillas-altamesa-300-hombre-nf0a8a9r-nf926","a":["trail-running"],"g":["hombres"],"t":["senderos-mixtos","carretera"],"f":["ligera","amortiguacion","adherencia","transpirable","proteccion"],"cat":"DEPORTIVAS"},{"id":"NF0A8A9S_NFDTX","name":"Zapatillas Altamesa 300 Shoes Mujer","price":149990,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8a9s_nfdtx_1_1.jpg","url":"https://www.thenorthface.cl/zapatillas-altamesa-300-shoes-mujer-nf0a8a9s-nfdtx","a":["trail-running"],"g":["mujeres"],"t":["senderos-mixtos","carretera"],"f":["ligera","amortiguacion","adherencia","transpirable","proteccion"],"cat":"DEPORTIVAS"},{"id":"NF0A8A9X_NFKX7","name":"Zapatillas Offtrail Tr Gore-Tex® Hombre","price":189990,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8a9x_nfkx7_1_1.jpg","url":"https://www.thenorthface.cl/zapatillas-offtrail-tr-gore-tex-hombre-nf0a8a9x-nfkx7","a":["trail-running"],"g":["hombres"],"t":["montana-tecnica","senderos-mixtos"],"f":["amortiguacion","adherencia","proteccion","impermeabilidad"],"cat":"DEPORTIVAS"},{"id":"NF0A8A9Z_NF713","name":"Zapatillas Offtrail Tr Hombre","price":179990,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8a9z_nf713_1_2.jpg","url":"https://www.thenorthface.cl/zapatillas-offtrail-tr-hombre-nf0a8a9z-nf713","a":["trail-running"],"g":["hombres"],"t":["montana-tecnica","senderos-mixtos"],"f":["adherencia","proteccion"],"cat":"DEPORTIVAS"},{"id":"NF0A8AA9_NF73E","name":"Zapatillas Hedgehog Gore-Tex Hombre","price":219990,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8aa9_nf73e_1_1.jpg","url":"https://www.thenorthface.cl/zapatillas-hedgehog-gore-tex-hombre-nf0a8aa9-nf73e","a":["senderismo"],"g":["hombres"],"t":["rutas-tecnicas","senderos-mixtos"],"f":["impermeabilidad","adherencia","soporte","proteccion"],"cat":"TREKKING"},{"id":"NF0A8AAB_NFDUR","name":"Zapatillas Hedgehog Gore-Tex Mujer","price":219990,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8aab_nfdur_1_1.jpg","url":"https://www.thenorthface.cl/zapatillas-hedgehog-gore-tex-mujer-nf0a8aab-nfdur","a":["senderismo"],"g":["mujeres"],"t":["rutas-tecnicas","senderos-mixtos"],"f":["impermeabilidad"],"cat":"TREKKING"},{"id":"NF0A8AD9_NFKX7","name":"Zapatillas Clyffe Shoes","price":139990,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8ad9_nfkx7_1_1.jpg","url":"https://www.thenorthface.cl/zapatillas-clyffe-shoes-nf0a8ad9-nfkx7","a":["lifestyle"],"g":["hombres"],"t":["urbano","viajes"],"f":["comodidad","transpirable","versatil"],"cat":"CASUALES"},{"id":"NF0A8AEG_NFKY4","name":"Zapatillas Offtrail Hike Gore-Tex Hombre","price":209990,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8aeg_nfky4_1_2.jpg","url":"https://www.thenorthface.cl/zapatillas-offtrail-hike-gore-tex-hombre-nf0a8aeg-nfky4","a":["senderismo"],"g":["hombres"],"t":["rutas-tecnicas","senderos-mixtos"],"f":["impermeabilidad","adherencia","proteccion"],"cat":"TREKKING"},{"id":"NF0A8AEH_NF77R","name":"Zapatillas Offtrail Hike Gore-Tex Mujer","price":209990,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8aeh_nf77r_1_1.jpg","url":"https://www.thenorthface.cl/w-offtrail-hike-gore-tex-nf0a8aeh-nf77r","a":["senderismo"],"g":["mujeres"],"t":["rutas-tecnicas","senderos-mixtos"],"f":["impermeabilidad","adherencia","proteccion"],"cat":"TREKKING"},{"id":"NF0A8AEJ_NF7UM","name":"Zapatillas Summit Vectiv Pro 3","price":279990,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8aej_nf7um_1_1.jpg","url":"https://www.thenorthface.cl/summit-vectiv-pro-3-nf0a8aej-nf7um","a":["trail-running"],"g":["hombres"],"t":["montana-tecnica","senderos-mixtos"],"f":["amortiguacion","adherencia","transpirable","proteccion"],"cat":"DEPORTIVAS"},{"id":"NF0A8AEM_NF7UM","name":"Zapatillas Summit Vectiv Sky 2 Hombre","price":219990,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8aem_nf7um_1_2.jpg","url":"https://www.thenorthface.cl/zapatillas-summit-vectiv-sky-2-hombre-nf0a8aem-nf7um","a":["trail-running"],"g":["hombres"],"t":["montana-tecnica","senderos-mixtos"],"f":["ligera","amortiguacion","adherencia"],"cat":"DEPORTIVAS"},{"id":"NF0A8AEP_NF73T","name":"Zapatillas Vectiv Enduris 4 Hombre","price":179990,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8aep_nf73t_1_2.jpg","url":"https://www.thenorthface.cl/m-vectiv-enduris-4-nf0a8aep-nf73t","a":["trail-running"],"g":["hombres"],"t":["senderos-mixtos","carretera"],"f":["amortiguacion"],"cat":"DEPORTIVAS"},{"id":"NF0A8AEQ_NFDU9","name":"Zapatillas Vectiv Enduris 4 Mujer","price":179990,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8aeq_nfdu9_1_1.jpg","url":"https://www.thenorthface.cl/zapatillas-vectiv-enduris-4-mujer-nf0a8aeq-nfdu9","a":["trail-running"],"g":["mujeres"],"t":["senderos-mixtos","carretera"],"f":["amortiguacion"],"cat":"DEPORTIVAS"},{"id":"NF0A8AER_NF801","name":"Zapatillas Vectiv Infinite 3 Hombre","price":179990,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8aer_nf801_1_1.jpg","url":"https://www.thenorthface.cl/zapatillas-vectiv-infinite-3-hombre-nf0a8aer-nf801","a":["trail-running"],"g":["hombres"],"t":["montana-tecnica","senderos-mixtos"],"f":["ligera","amortiguacion","adherencia"],"cat":"DEPORTIVAS"},{"id":"NF0A8AEX_NFKY4","name":"Zapatillas Offtrail Versa","price":159990,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8aex_nfky4_1_1.jpg","url":"https://www.thenorthface.cl/zapatillas-offtrail-versa-hombre-nf0a8aex-nfky4","a":["senderismo"],"g":["hombres"],"t":["senderos-mixtos"],"f":["adherencia"],"cat":"TREKKING"},{"id":"NF0A8AF4_NFNY7","name":"Zapatillas Vectiv Fastpack Wp","price":169990,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8af4_nfny7_1_1.jpg","url":"https://www.thenorthface.cl/m-vectiv-fastpack-wp-nf0a8af4-nfny7","a":["senderismo"],"g":["hombres"],"t":["rutas-tecnicas","senderos-mixtos"],"f":["impermeabilidad","transpirable","ligera","soporte"],"cat":"TREKKING"},{"id":"NF0A8AF5_NFNY7","name":"Zapatos Vectiv Fastpack Mid Wp","price":179990,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8af5_nfny7_1_1.jpg","url":"https://www.thenorthface.cl/m-vectiv-fastpack-mid-wp-nf0a8af5-nfny7","a":["senderismo"],"g":["hombres"],"t":["senderos-mixtos","montana-alta"],"f":["impermeabilidad","transpirable","ligera","soporte"],"cat":"MEDIA MONTAÑA"},{"id":"NF0A8AFA_NF7E1","name":"Zapatillas Vectiv Fastpack Mid Wp","price":179990,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8afa_nf7e1_1_2.jpg","url":"https://www.thenorthface.cl/w-vectiv-fastpack-mid-wp-nf0a8afa-nf7e1","a":["senderismo"],"g":["mujeres"],"t":["senderos-mixtos","montana-alta"],"f":["impermeabilidad","transpirable","ligera","soporte"],"cat":"MEDIA MONTAÑA"},{"id":"NF0A8AFB_NF7R8","name":"Zapatillas Vectiv Fastpack Lite Wp Hombre","price":149990,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8afb_nf7r8_1_1.jpg","url":"https://www.thenorthface.cl/m-vectiv-fastpack-lite-wp-nf0a8afb-nf7r8","a":["senderismo"],"g":["hombres"],"t":["rutas-tecnicas","senderos-mixtos"],"f":["impermeabilidad","transpirable","ligera","soporte","proteccion"],"cat":"TREKKING"},{"id":"NF0A8AFC_NFW9O","name":"Zapatillas Vectiv Fastpack Lite Wp Mujer","price":149990,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8afc_nfw9o_1_1.jpg","url":"https://www.thenorthface.cl/zapatillas-vectiv-fastpack-lite-wp-mujer-nf0a8afc-nfw9o","a":["senderismo"],"g":["mujeres"],"t":["rutas-tecnicas","senderos-mixtos"],"f":["impermeabilidad","transpirable","ligera","soporte","proteccion"],"cat":"TREKKING"},{"id":"NF0A8D8W_NFC79","name":"Zapatos Bergen Mid Wp Hombre","price":159990,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8d8w_nfc79_1_1.jpg","url":"https://www.thenorthface.cl/zapatos-bergen-mid-wp-hombre-nf0a8d8w-nfc79","a":["lifestyle"],"g":["hombres"],"t":["urbano","viajes"],"f":["comodidad","resistente-agua","versatil"],"cat":"CASUALES"},{"id":"NF0A8D8Z_NFC79","name":"Botas Shellista V Shorty Wp Mujer","price":159990,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8d8z_nfc79_1_1.jpg","url":"https://www.thenorthface.cl/botas-shellista-v-shorty-wp-mujer-nf0a8d8z-nfc79","a":["senderismo"],"g":["mujeres"],"t":["montana-alta"],"f":["impermeabilidad","adherencia","ligera"],"cat":"NIEVE"},{"id":"NF0A8D92_NFZU3","name":"Botas Base Camp 200 Wp Hombre","price":229990,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8d92_nfzu3_1_1.jpg","url":"https://www.thenorthface.cl/botas-base-camp-200-wp-hombre-nf0a8d92-nfzu3","a":["senderismo"],"g":["hombres"],"t":["montana-alta"],"f":["impermeabilidad","adherencia","ligera"],"cat":"NIEVE"},{"id":"NF0A8D96_NFKX9","name":"Zapatillas Offtrail Ve Hombre","price":149990,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8d96_nfkx9_1_2.jpg","url":"https://www.thenorthface.cl/zapatillas-offtrail-ve-hombre-nf0a8d96-nfkx9","a":["lifestyle","trail-running"],"g":["hombres"],"t":["senderos-mixtos","carretera","urbano","viajes"],"f":["adherencia","proteccion","versatil"],"cat":"CASUALES"},{"id":"NF0A8D9K_NF7R8","name":"Zapatos Offtrail Hike Lt Mid Gore-Tex Hombre","price":229990,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8d9k_nf7r8_1_2.jpg","url":"https://www.thenorthface.cl/m-offtrail-hike-lt-mid-gore-tex-nf0a8d9k-nf7r8","a":["senderismo"],"g":["hombres"],"t":["senderos-mixtos","montana-alta"],"f":["impermeabilidad","adherencia","soporte","proteccion"],"cat":"MEDIA MONTAÑA"},{"id":"NF0A8D9M_NF77R","name":"Zapatos Offtrail Hike Lt Mid Gore-Tex Mujer","price":229990,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8d9m_nf77r_1_2.jpg","url":"https://www.thenorthface.cl/w-offtrail-hike-lt-mid-gore-tex-nf0a8d9m-nf77r","a":["senderismo"],"g":["mujeres"],"t":["senderos-mixtos","montana-alta"],"f":["impermeabilidad","adherencia","soporte","proteccion"],"cat":"MEDIA MONTAÑA"},{"id":"NF0A8DAA_NFZU3","name":"Botas Nuptse Traction Chukka Hombre","price":149990,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8daa_nfzu3_1_2.jpg","url":"https://www.thenorthface.cl/botas-nuptse-traction-chukka-hombre-nf0a8daa-nfzu3","a":["lifestyle"],"g":["hombres"],"t":["urbano","viajes"],"f":["versatil"],"cat":"CASUALES"},{"id":"NF0A8DAJ_NFF2Z","name":"Zapatillas Altamesa 500 V2 Hombre","price":189990,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8daj_nff2z_1_2.jpg","url":"https://www.thenorthface.cl/zapatillas-altamesa-500-v2-hombre-nf0a8daj-nff2z","a":["trail-running"],"g":["hombres"],"t":["carretera"],"f":["ligera","amortiguacion","adherencia","proteccion","drop-bajo"],"cat":"DEPORTIVAS"},{"id":"NF0A8DB0_NFKX7","name":"Botas Leather Pack Bootie Hybrid Mujer","price":279990,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8db0_nfkx7_1_1.jpg","url":"https://www.thenorthface.cl/botas-leather-pack-bootie-hybrid-hombre-nf0a8db0-nfkx7","a":["senderismo"],"g":["hombres"],"t":["montana-alta"],"f":["soporte"],"cat":"NIEVE"},{"id":"NF0A8DB3_NFKA3","name":"Zapatillas Altamesa 500 V2 Mujer","price":189990,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8db3_nfka3_1_1.jpg","url":"https://www.thenorthface.cl/zapatillas-altamesa-500-v2-mujer-nf0a8db3-nfka3","a":["trail-running"],"g":["mujeres"],"t":["carretera"],"f":["ligera","amortiguacion","adherencia","proteccion","drop-bajo"],"cat":"DEPORTIVAS"},{"id":"NF0A8DBC_NFHFQ","name":"Botas Shellista Vi Mid Wp Mujer","price":179990,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8dbc_nfhfq_1_1.jpg","url":"https://www.thenorthface.cl/botas-shellista-vi-mid-wp-mujer-nf0a8dbc-nfhfq","a":["senderismo"],"g":["mujeres"],"t":["montana-alta"],"f":["impermeabilidad","soporte","proteccion"],"cat":"NIEVE"},{"id":"NF0A8G6C_NFIHY","name":"Zapatillas Altamesa 300 V2 Mujer","price":159990,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8g6c_nfihy_1_1.jpg","url":"https://www.thenorthface.cl/zapatillas-altamesa-300-v2-mujer-nf0a8g6c-nfihy","a":["trail-running"],"g":["mujeres"],"t":["senderos-mixtos","carretera"],"f":["ligera","amortiguacion","adherencia"],"cat":"DEPORTIVAS"},{"id":"NF0A8G6M_NF6S4","name":"Zapatillas Altamesa 300 V2 Hombre","price":159990,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8g6m_nf6s4_1_1.jpg","url":"https://www.thenorthface.cl/zapatillas-altamesa-300-v2-hombre-nf0a8g6m-nf6s4","a":["trail-running"],"g":["hombres"],"t":["senderos-mixtos","carretera"],"f":["ligera","amortiguacion","adherencia"],"cat":"DEPORTIVAS"}];
+
+const ST = {act:null,gen:null,ter:null,feat:[],step:1,sort:'def'};
+
+const TERR = {
+  senderismo:[
+    {id:'rutas-tecnicas',   l:'Rutas técnicas',   s:'Terreno exigente y rocoso'},
+    {id:'senderos-mixtos',  l:'Senderos mixtos',  s:'Variedad de superficies'},
+    {id:'montana-alta',     l:'Montaña alta',     s:'Alta montaña y nieve'},
+  ],
+  'trail-running':[
+    {id:'montana-tecnica',  l:'Montaña técnica',  s:'Trail técnico exigente'},
+    {id:'senderos-mixtos',  l:'Senderos mixtos',  s:'Variedad de superficies'},
+    {id:'carretera',        l:'Carretera',         s:'Asfalto y camino duro'},
+  ],
+  lifestyle:[
+    {id:'urbano',           l:'Urbano diario',    s:'Ciudad y uso cotidiano'},
+    {id:'viajes',           l:'Viajes y aventura', s:'Versatilidad al máximo'},
+  ]
+};
+
+const FEATS = {
+  senderismo:[
+    {id:'impermeabilidad', l:'Impermeabilidad', svg:'<path d="M12 2C8 8 5 12 5 16a7 7 0 0014 0c0-4-3-8-7-14z"/>'},
+    {id:'transpirable',    l:'Transpirable',    svg:'<path d="M5 12h14M5 8h14M5 16h14" stroke-linecap="round"/>'},
+    {id:'adherencia',      l:'Adherencia',      svg:'<path d="M4 8h16M4 12h16M7 16h10M9 20h6"/>'},
+    {id:'ligera',          l:'Ligera',          svg:'<path d="M12 2l2 7h7l-5.5 4 2 7L12 16l-5.5 4 2-7L3 9h7z"/>'},
+    {id:'soporte',         l:'Soporte y estabilidad', svg:'<path d="M12 2l8 6v8a2 2 0 01-2 2H6a2 2 0 01-2-2V8z"/>'},
+    {id:'proteccion',      l:'Protección dedos', svg:'<path d="M12 2l9 4v6c0 5-4 9-9 10C3 21-1 17-1 12V6z"/>'},
+  ],
+  'trail-running':[
+    {id:'ligera',          l:'Ligera',          svg:'<path d="M12 2l2 7h7l-5.5 4 2 7L12 16l-5.5 4 2-7L3 9h7z"/>'},
+    {id:'amortiguacion',   l:'Amortiguación',   svg:'<rect x="2" y="9" width="20" height="6" rx="3"/><path d="M5 9V7m4 2V6m4 3V5m4 4V7"/>'},
+    {id:'adherencia',      l:'Adherencia',      svg:'<path d="M4 8h16M4 12h16M7 16h10M9 20h6"/>'},
+    {id:'transpirable',    l:'Transpirable',    svg:'<path d="M5 12h14M5 8h14M5 16h14" stroke-linecap="round"/>'},
+    {id:'proteccion',      l:'Protección terreno', svg:'<path d="M12 2l9 4v6c0 5-4 9-9 10C3 21-1 17-1 12V6z"/>'},
+    {id:'drop-bajo',       l:'Drop bajo',       svg:'<path d="M4 6h16M4 18l8-12 8 12"/><circle cx="12" cy="18" r="2"/>'},
+  ],
+  lifestyle:[
+    {id:'comodidad',       l:'Comodidad todo el día', svg:'<path d="M12 21.593c-5.63-5.539-11-10.297-11-14.402C1 3.518 4.068 2 6.281 2c1.312 0 4.151.501 5.719 4.457 1.59-3.968 4.464-4.447 5.726-4.447C20.266 2 23 3.608 23 7.191c0 4.069-5.136 8.625-11 14.402z"/>'},
+    {id:'ligera',          l:'Ligera',          svg:'<path d="M12 2l2 7h7l-5.5 4 2 7L12 16l-5.5 4 2-7L3 9h7z"/>'},
+    {id:'transpirable',    l:'Transpirable',    svg:'<path d="M5 12h14M5 8h14M5 16h14" stroke-linecap="round"/>'},
+    {id:'resistente-agua', l:'Resistente al agua', svg:'<path d="M12 2C8 8 5 12 5 16a7 7 0 0014 0c0-4-3-8-7-14z"/>'},
+    {id:'versatil',        l:'Versátil',        svg:'<path d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.66 0 3-4.03 3-9s-1.34-9-3-9m0 18c-1.66 0-3-4.03-3-9s1.34-9 3-9"/>'},
+  ]
+};
+
+const ACT_LABEL = {senderismo:'Senderismo','trail-running':'Trail Running',lifestyle:'Lifestyle'};
+const GEN_LABEL = {hombres:'Hombres',mujeres:'Mujeres'};
+const TER_LABEL = {'rutas-tecnicas':'Rutas técnicas','senderos-mixtos':'Senderos mixtos','montana-alta':'Montaña alta','montana-tecnica':'Montaña técnica',carretera:'Carretera',urbano:'Urbano diario',viajes:'Viajes y aventura'};
+const FEAT_LABEL = {impermeabilidad:'Impermeabilidad',transpirable:'Transpirable',adherencia:'Adherencia',ligera:'Ligera',soporte:'Soporte',proteccion:'Protección',amortiguacion:'Amortiguación','drop-bajo':'Drop bajo',comodidad:'Comodidad','resistente-agua':'Resist. agua',versatil:'Versátil'};
+
+function fil(){
+  let r = PRODUCTS.filter(p=>{
+    if(ST.act && !p.a.includes(ST.act)) return false;
+    if(ST.gen && !p.g.includes(ST.gen)) return false;
+    if(ST.ter && !p.t.includes(ST.ter)) return false;
+    if(ST.feat.length>0 && !ST.feat.some(f=>p.f.includes(f))) return false;
+    return true;
+  });
+  if(ST.sort==='asc') r.sort((a,b)=>a.price-b.price);
+  else if(ST.sort==='desc') r.sort((a,b)=>b.price-a.price);
+  return r;
+}
+
+function updC(){
+  const n=fil().length;
+  ['c1','c2','c3','c4'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=n;});
+}
+
+function updProg(n){
+  document.getElementById('step-label').textContent = n<=4 ? 'Paso '+n+' de 4' : 'Tu selección';
+  document.querySelectorAll('#prog .pd').forEach(d=>{
+    const ds=+d.dataset.s;
+    d.className='pd'+(ds===n?' on':ds<n?' dn':'');
+  });
+  document.getElementById('prog').closest('.prog-wrap').style.display = n===5 ? 'none' : 'block';
+}
+
+function updBC(){
+  const bc = document.getElementById('bc');
+  const parts = [];
+  if(ST.act) parts.push(ACT_LABEL[ST.act]);
+  if(ST.gen) parts.push(GEN_LABEL[ST.gen]);
+  if(ST.ter) parts.push(TER_LABEL[ST.ter]);
+  else if(ST.step>=4 && ST.act) parts.push('<span style="color:#CCC">Sin filtro terreno</span>');
+  if(ST.feat.length>0) parts.push(ST.feat.slice(0,2).map(f=>FEAT_LABEL[f]).join(', ')+(ST.feat.length>2?' +':''));
+  if(parts.length===0){bc.innerHTML='';return;}
+  bc.innerHTML = parts.map((p,i)=>
+    '<span class="bc-item'+(i===parts.length-1?' active':'')+'">'+p+'</span>'+(i<parts.length-1?'<span class="bc-sep">›</span>':'')
+  ).join('');
+}
+
+function go(n){
+  document.querySelectorAll('.step').forEach(e=>e.classList.remove('active'));
+  document.getElementById('s'+n).classList.add('active');
+  ST.step=n; updProg(n); updBC(); updC();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function selCard(el){
+  el.closest('.og').querySelectorAll('.oc').forEach(o=>o.classList.remove('sel'));
+  el.classList.add('sel');
+}
+
+function p1(el){
+  ST.act=el.dataset.val; ST.gen=null; ST.ter=null; ST.feat=[];
+  selCard(el); setTimeout(()=>go(2),280);
+}
+function p2(el){
+  ST.gen=el.dataset.val; ST.ter=null; ST.feat=[];
+  selCard(el); buildTerrain(); setTimeout(()=>go(3),280);
+}
+function pickTerrain(id, el){
+  ST.ter=id; ST.feat=[];
+  selCard(el); buildFeats(); setTimeout(()=>go(4),280);
+}
+function skipTerrain(){ ST.ter=null; ST.feat=[]; buildFeats(); go(4); }
+function skipFeats(){ ST.feat=[]; showPLP(); }
+
+function buildTerrain(){
+  const opts = (TERR[ST.act]||[]).filter(o=>{
+    if(o.id==='montana-tecnica' && ST.gen==='mujeres') return false;
+    return true;
+  });
+  const notice = document.getElementById('gap-notice');
+  if(ST.act==='trail-running' && ST.gen==='mujeres'){
+    notice.style.display='block';
+    notice.innerHTML='<b>Nota:</b> La opción "Montaña técnica" no está disponible para mujeres en el catálogo actual.';
+  } else { notice.style.display='none'; }
+
+  const cols = opts.length<=2?2:opts.length<=3?3:4;
+  const g = document.getElementById('tg');
+  g.style.gridTemplateColumns='repeat('+cols+',1fr)';
+  g.innerHTML = opts.map(o=>`
+    <div class="oc" onclick="pickTerrain('${o.id}',this)">
+      <span class="ol">${o.l}</span>
+      <span class="os">${o.s}</span>
+    </div>`).join('');
+}
+
+function buildFeats(){
+  ST.feat=[];
+  const feats = FEATS[ST.act]||[];
+  document.getElementById('fc').style.display='none';
+  document.getElementById('fh').textContent='0 de 4 seleccionadas';
+  document.getElementById('fmax').classList.remove('show');
+  document.getElementById('fg').innerHTML = feats.map(f=>`
+    <div class="oc" onclick="toggleFeat('${f.id}',this)" data-fid="${f.id}">
+      <svg class="oic" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">${f.svg}</svg>
+      <span class="ol">${f.l}</span>
+    </div>`).join('');
+}
+
+function toggleFeat(v, el){
+  const i = ST.feat.indexOf(v);
+  if(i>=0){ ST.feat.splice(i,1); el.classList.remove('sel'); }
+  else{
+    if(ST.feat.length>=4){ document.getElementById('fmax').classList.add('show'); return; }
+    ST.feat.push(v); el.classList.add('sel');
+  }
+  document.getElementById('fmax').classList.toggle('show', ST.feat.length>=4);
+  document.querySelectorAll('#fg .oc:not(.sel)').forEach(c=>{
+    c.classList.toggle('feat-disabled', ST.feat.length>=4);
+  });
+  document.getElementById('fh').textContent=ST.feat.length+' de 4 seleccionadas';
+  document.getElementById('fc').style.display = ST.feat.length>0 ? 'block' : 'none';
+  updC();
+}
+
+function sortBy(s){
+  ST.sort=s;
+  ['asc','desc','def'].forEach(k=>{
+    document.getElementById('pill-'+k).classList.toggle('active',k===s);
+  });
+  renderPLP();
+}
+
+function fmtCLP(n){ return '$'+n.toLocaleString('es-CL'); }
+
+function renderPLP(){
+  const r = fil();
+  document.getElementById('pt').textContent = r.length+' Modelo'+(r.length!==1?'s':'');
+  if(r.length>0){
+    const prices = r.map(p=>p.price);
+    const mn = Math.min(...prices), mx = Math.max(...prices);
+    document.getElementById('prange').textContent = mn===mx
+      ? 'Precio: '+fmtCLP(mn)
+      : 'Desde '+fmtCLP(mn)+' hasta '+fmtCLP(mx);
+  }
+  const g = document.getElementById('pgrid');
+  if(!r.length){
+    g.innerHTML=`<div class="empty-state">
+      <h4>Sin resultados</h4>
+      <p>No encontramos modelos exactos para esta combinación.<br>Intenta con diferentes filtros o empieza de nuevo.</p>
+      <button class="btnrestart" onclick="restart()">Comenzar de nuevo</button>
+    </div>`;
+    return;
+  }
+  g.innerHTML = r.map(p=>{
+    const matchTags = ST.feat.filter(f=>p.f.includes(f)).map(f=>`<span class="ptag match">${FEAT_LABEL[f]||f}</span>`).join('');
+    const otherTags = p.f.filter(f=>!ST.feat.includes(f)).slice(0,2).map(f=>`<span class="ptag">${FEAT_LABEL[f]||f}</span>`).join('');
+    return `<div class="pcard">
+      <div class="pimg">
+        <img src="${p.img}" alt="${p.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div class="pimg-fallback" style="display:none;background:#1a1a1a">
+          <svg width="40" height="32" viewBox="0 0 80 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="44" cy="53" rx="29" ry="6" fill="rgba(255,255,255,0.15)"/>
+            <path d="M16 48 Q20 30 34 26 Q50 22 60 30 Q68 36 67 47 Q62 51 50 53 Q31 55 17 51Z" fill="rgba(255,255,255,0.1)"/>
+            <path d="M34 26 Q38 15 46 12 Q54 8 60 19 Q63 25 60 30 Q50 22 34 26Z" fill="rgba(255,255,255,0.15)"/>
+          </svg>
+        </div>
+      </div>
+      <div class="pbody">
+        <p class="pname">${p.name}</p>
+        <p class="pprice">${fmtCLP(p.price)}</p>
+        ${matchTags||otherTags ? '<div class="ptags">'+matchTags+otherTags+'</div>' : ''}
+      </div>
+      <a class="plink" href="${p.url}" target="_blank" rel="noopener">Ver producto &rarr;</a>
+    </div>`;
+  }).join('');
+}
+
+function showPLP(){ renderPLP(); go(5); }
+
+function bk(){
+  const p = ST.step-1; if(p<1) return;
+  if(ST.step===4){ ST.feat=[]; document.getElementById('fc').style.display='none'; }
+  if(ST.step===3){ ST.ter=null; }
+  if(ST.step===2){ ST.act=null; document.querySelectorAll('#s1 .oc').forEach(o=>o.classList.remove('sel')); }
+  if(p===1||p===2){
+    setTimeout(()=>{
+      const v = p===1 ? ST.act : ST.gen;
+      const sid = '#s'+(p===1?1:2);
+      if(v){ const e=document.querySelector(sid+' [data-val="'+v+'"]');
+        if(e){document.querySelectorAll(sid+' .oc').forEach(o=>o.classList.remove('sel'));e.classList.add('sel');}}
+    },30);
+  }
+  if(p===4){
+    setTimeout(()=>{
+      document.getElementById('fh').textContent=ST.feat.length+' de 4 seleccionadas';
+      document.getElementById('fc').style.display=ST.feat.length>0?'block':'none';
+      document.querySelectorAll('#fg .oc').forEach(e=>{
+        e.classList.toggle('sel',ST.feat.includes(e.dataset.fid));
+        e.classList.remove('feat-disabled');
+      });
+    },30);
+  }
+  go(p);
+}
+
+function restart(){
+  ST.act=null;ST.gen=null;ST.ter=null;ST.feat=[];ST.sort='def';ST.step=1;
+  ['asc','desc'].forEach(k=>document.getElementById('pill-'+k).classList.remove('active'));
+  document.getElementById('pill-def').classList.add('active');
+  document.querySelectorAll('.oc').forEach(o=>{o.classList.remove('sel','feat-disabled');});
+  go(1);
+}
+
+updC();
+</script>
+</body>
+</html>
