@@ -4,17 +4,18 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Marmot Chile — Encuentra tu chaqueta</title>
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&family=Roboto+Slab:wght@700;800&display=swap" rel="stylesheet">
 <style>
-:root{--accent:#0057B8;--accent-dk:#00429A;--ink:#16181D;--paper:#fff;--bg:#f4f5f7;}
+:root{--accent:#D0212A;--accent-dk:#A5121A;--ink:#231F20;--paper:#fff;--bg:#EBE9E4;}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Barlow',sans-serif;background:var(--bg);min-height:100vh;display:flex;justify-content:center;padding:2rem 1rem}
+body{font-family:'Roboto',sans-serif;background:var(--bg);min-height:100vh;display:flex;justify-content:center;padding:2rem 1rem}
 .finder{width:100%;max-width:780px;background:var(--paper)}
 
-.topbar{background:var(--ink);padding:12px 20px;display:flex;align-items:center;gap:10px}
-.logo{color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:18px;letter-spacing:0.18em;display:inline-flex;align-items:center;gap:7px}
-.logo .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);display:inline-block}
-.topbar-sub{color:rgba(255,255,255,0.45);font-size:12px;letter-spacing:0.04em}
+.promobar{background:#1E2528;color:#fff;text-align:center;font-size:11px;font-weight:500;letter-spacing:0.06em;padding:9px 16px}
+.topbar{background:#fff;border-bottom:1px solid #E7E4DE;padding:14px 20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.logo{color:var(--accent);font-family:'Roboto Slab',serif;font-weight:800;font-size:26px;letter-spacing:-0.01em;line-height:1;display:inline-flex;align-items:flex-start}
+.logo .reg{font-size:10px;font-weight:700;margin-top:2px;margin-left:1px}
+.topbar-sub{color:#8A8A8A;font-size:12px;letter-spacing:0.02em}
 
 .prog-wrap{padding:18px 20px 0}
 .prog-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
@@ -22,7 +23,7 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);min-height:100vh;displ
 .prog-dots{display:flex;gap:5px}
 .pd{width:7px;height:7px;border-radius:50%;background:#DDD;transition:all 0.22s}
 .pd.on{width:24px;border-radius:3px;background:var(--accent)}
-.pd.dn{background:#8fa9c9}
+.pd.dn{background:#E7B9BC}
 
 .breadcrumb{min-height:24px;padding:6px 20px 0;display:flex;align-items:center;gap:0;flex-wrap:wrap}
 .bc-item{font-size:11px;color:#999;letter-spacing:0.02em}
@@ -34,29 +35,29 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);min-height:100vh;displ
 @keyframes fi{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 
 .shead{text-align:center;padding:18px 20px 14px}
-.stitle{font-family:'Barlow Condensed',sans-serif;font-size:30px;font-weight:700;color:var(--ink);letter-spacing:0.02em;text-transform:uppercase;line-height:1}
+.stitle{font-family:'Roboto Slab',serif;font-size:30px;font-weight:800;color:var(--ink);letter-spacing:-0.01em;line-height:1.05}
 .ssub{font-size:13px;color:#888;margin:6px auto 0;max-width:480px;line-height:1.55}
 
 .og{display:grid;gap:3px}
 .oc{background:var(--ink);min-height:132px;padding:1.6rem 1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:0.6rem;border:2px solid transparent;transition:border-color 0.13s,filter 0.15s;text-align:center;position:relative;overflow:hidden}
 .oc:hover{filter:brightness(1.22)}
 .oc.sel{border-color:var(--accent)}
-.oc.sel::after{content:"\2713";position:absolute;top:8px;right:10px;color:var(--accent);font-size:14px;font-weight:700;font-family:'Barlow Condensed',sans-serif}
+.oc.sel::after{content:"\2713";position:absolute;top:8px;right:10px;color:var(--accent);font-size:14px;font-weight:700;font-family:'Roboto',sans-serif}
 .oc.disabled,.oc.feat-disabled{filter:brightness(0.4);cursor:not-allowed;pointer-events:none}
 .oic{color:#fff;font-size:26px;line-height:1}
-.ol{font-family:'Barlow Condensed',sans-serif;color:#fff;font-size:15px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase}
+.ol{font-family:'Roboto',sans-serif;color:#fff;font-size:15px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase}
 .os{color:rgba(255,255,255,0.4);font-size:11px;margin-top:1px}
 .ocount{position:absolute;bottom:8px;left:0;right:0;text-align:center;color:rgba(255,255,255,0.32);font-size:10px;letter-spacing:0.04em}
 
 .skip-wrap{text-align:center;padding:10px 0 4px}
-.skip-link{background:none;border:none;color:#888;font-size:12px;cursor:pointer;font-family:'Barlow',sans-serif;letter-spacing:0.04em;text-decoration:underline;padding:6px 12px}
+.skip-link{background:none;border:none;color:#888;font-size:12px;cursor:pointer;font-family:'Roboto',sans-serif;letter-spacing:0.04em;text-decoration:underline;padding:6px 12px}
 .skip-link:hover{color:#333}
 
 .cbar{text-align:center;font-size:12px;color:#999;padding:10px;border-top:1px solid #F0F0F0;letter-spacing:0.04em}
-.cbar b{color:var(--ink);font-size:14px;font-family:'Barlow Condensed',sans-serif}
+.cbar b{color:var(--ink);font-size:14px;font-family:'Roboto',sans-serif}
 
 .navrow{padding:12px 20px 0;display:flex;align-items:center}
-.btnback{background:transparent;border:1px solid #DDD;color:#555;padding:6px 16px;border-radius:20px;cursor:pointer;font-size:12px;font-family:'Barlow',sans-serif;display:inline-flex;align-items:center;gap:6px;transition:border-color 0.13s,color 0.13s}
+.btnback{background:transparent;border:1px solid #DDD;color:#555;padding:6px 16px;border-radius:20px;cursor:pointer;font-size:12px;font-family:'Roboto',sans-serif;display:inline-flex;align-items:center;gap:6px;transition:border-color 0.13s,color 0.13s}
 .btnback:hover{border-color:var(--accent);color:var(--ink)}
 
 .feat-meta{display:flex;justify-content:space-between;align-items:center;padding:4px 20px 8px}
@@ -64,19 +65,19 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);min-height:100vh;displ
 .feat-max{font-size:11px;color:var(--accent);font-weight:600;opacity:0;transition:opacity 0.2s}
 .feat-max.show{opacity:1}
 .feat-cta{text-align:center;padding:14px 20px 6px}
-.btnver{background:var(--accent);color:#fff;border:none;padding:12px 40px;border-radius:2px;font-size:15px;font-weight:700;font-family:'Barlow Condensed',sans-serif;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;transition:background 0.15s;width:100%}
+.btnver{background:var(--accent);color:#fff;border:none;padding:12px 40px;border-radius:2px;font-size:15px;font-weight:700;font-family:'Roboto',sans-serif;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;transition:background 0.15s;width:100%}
 .btnver:hover{background:var(--accent-dk)}
 
 .plp-wrap{padding:16px 20px 0}
 .plp-top{display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:6px}
-.plp-title{font-family:'Barlow Condensed',sans-serif;font-size:24px;font-weight:700;color:var(--ink);letter-spacing:0.04em;text-transform:uppercase}
+.plp-title{font-family:'Roboto Slab',serif;font-size:24px;font-weight:800;color:var(--ink);letter-spacing:0}
 .plp-range{font-size:12px;color:#999;margin-top:2px}
-.plp-restart{background:none;border:none;color:#888;font-size:12px;cursor:pointer;font-family:'Barlow',sans-serif;text-decoration:underline}
+.plp-restart{background:none;border:none;color:#888;font-size:12px;cursor:pointer;font-family:'Roboto',sans-serif;text-decoration:underline}
 .plp-restart:hover{color:var(--ink)}
 .pill-row{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0;border-bottom:1px solid #F0F0F0;padding-bottom:10px}
-.pill{border:1px solid #DDD;background:transparent;color:#666;padding:5px 14px;border-radius:20px;font-size:12px;cursor:pointer;font-family:'Barlow',sans-serif;transition:border-color 0.13s,color 0.13s}
+.pill{border:1px solid #DDD;background:transparent;color:#666;padding:5px 14px;border-radius:20px;font-size:12px;cursor:pointer;font-family:'Roboto',sans-serif;transition:border-color 0.13s,color 0.13s}
 .pill:hover{border-color:#999;color:var(--ink)}
-.pill.active{border-color:var(--ink);color:var(--ink);background:#EEF3FA}
+.pill.active{border-color:var(--ink);color:var(--ink);background:#F7E7E8}
 .sort-pill{margin-left:auto}
 
 .pgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding-bottom:24px}
@@ -86,24 +87,24 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);min-height:100vh;displ
 .pimg img{width:100%;height:100%;object-fit:cover;transition:transform 0.25s}
 .pcard:hover .pimg img{transform:scale(1.04)}
 .pimg-fallback{width:100%;height:100%;display:none;align-items:center;justify-content:center;background:linear-gradient(135deg,#1a1a1a,#333)}
-.disc-badge{position:absolute;top:8px;left:8px;background:var(--accent);color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;letter-spacing:0.04em;padding:2px 8px;border-radius:2px}
+.disc-badge{position:absolute;top:8px;left:8px;background:var(--accent);color:#fff;font-family:'Roboto',sans-serif;font-weight:700;font-size:12px;letter-spacing:0.04em;padding:2px 8px;border-radius:2px}
 .pbody{padding:10px 12px 12px;flex:1;display:flex;flex-direction:column;gap:4px}
 .pname{font-size:12px;font-weight:500;color:var(--ink);line-height:1.35}
 .price-row{display:flex;align-items:baseline;gap:7px;flex-wrap:wrap}
-.pprice{font-family:'Barlow Condensed',sans-serif;font-size:16px;color:var(--ink);letter-spacing:0.02em;font-weight:700}
+.pprice{font-family:'Roboto',sans-serif;font-size:16px;color:var(--ink);letter-spacing:0.02em;font-weight:700}
 .pfull{font-size:12px;color:#AAA;text-decoration:line-through}
 .pcolors{font-size:10px;color:#999;letter-spacing:0.02em}
 .ptags{display:flex;gap:4px;flex-wrap:wrap;margin-top:4px}
 .ptag{background:#F5F5F5;color:#666;font-size:10px;padding:2px 7px;border-radius:2px;letter-spacing:0.02em}
-.ptag.tipo{background:#EEF3FA;color:var(--accent-dk);font-weight:600}
-.ptag.match{background:#E3EEFB;color:var(--accent-dk)}
-.plink{display:block;text-align:center;padding:8px;background:var(--ink);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;text-decoration:none;margin-top:auto;transition:background 0.13s}
+.ptag.tipo{background:#F7E7E8;color:var(--accent-dk);font-weight:600}
+.ptag.match{background:#FBE3E4;color:var(--accent-dk)}
+.plink{display:block;text-align:center;padding:8px;background:var(--ink);color:#fff;font-family:'Roboto',sans-serif;font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;text-decoration:none;margin-top:auto;transition:background 0.13s}
 .plink:hover{background:var(--accent)}
 
 .empty-state{grid-column:1/-1;text-align:center;padding:3rem 1rem}
-.empty-state h4{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;margin-bottom:8px}
+.empty-state h4{font-family:'Roboto Slab',serif;font-size:20px;font-weight:800;letter-spacing:0;text-transform:none;margin-bottom:8px}
 .empty-state p{font-size:13px;color:#888;margin-bottom:16px}
-.btnrestart{background:var(--ink);color:#fff;border:none;padding:10px 28px;border-radius:2px;font-size:13px;font-weight:600;font-family:'Barlow Condensed',sans-serif;letter-spacing:0.07em;text-transform:uppercase;cursor:pointer}
+.btnrestart{background:var(--ink);color:#fff;border:none;padding:10px 28px;border-radius:2px;font-size:13px;font-weight:600;font-family:'Roboto',sans-serif;letter-spacing:0.07em;text-transform:uppercase;cursor:pointer}
 
 @media(max-width:540px){.pgrid{grid-template-columns:repeat(2,1fr)}.stitle{font-size:24px}}
 </style>
@@ -111,8 +112,9 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);min-height:100vh;displ
 <body>
 <div class="finder">
 
+  <div class="promobar">HASTA 3 CUOTAS SIN INTERÉS CON TODO MEDIO DE PAGO</div>
   <div class="topbar">
-    <span class="logo"><span class="dot"></span>MARMOT</span>
+    <span class="logo">Marmot<span class="reg">&reg;</span></span>
     <span class="topbar-sub">/ Encuentra tu chaqueta ideal</span>
   </div>
 
