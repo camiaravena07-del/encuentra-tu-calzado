@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Mammut Chile — Encuentra tu calzado</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--accent:#141414;--accent-dk:#000000;--ink:#141414;--paper:#fff;--bg:#F4F4F2;--red:#E30613;--lime:#C4D600;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:var(--bg);min-height:100vh;display:flex;justify-content:center;padding:2rem 1rem}
+.finder{width:100%;max-width:780px;background:var(--paper)}
+
+.promobar{background:#1E2528;color:#fff;text-align:center;font-size:11px;font-weight:500;letter-spacing:0.06em;padding:9px 16px}
+.topbar{background:#fff;border-bottom:1px solid #E7E4DE;padding:14px 20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.logo{color:var(--red);font-family:'Archivo',sans-serif;font-weight:800;font-size:24px;letter-spacing:0.14em;line-height:1;display:inline-flex;align-items:center;text-transform:uppercase}
+.logo .reg{font-size:10px;font-weight:700;margin-top:2px;margin-left:1px}
+.topbar-sub{color:#8A8A8A;font-size:12px;letter-spacing:0.02em}
+
+.prog-wrap{padding:18px 20px 0}
+.prog-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.prog-label{font-size:11px;color:#999;letter-spacing:0.06em;text-transform:uppercase}
+.prog-dots{display:flex;gap:5px}
+.pd{width:7px;height:7px;border-radius:50%;background:#DDD;transition:all 0.22s}
+.pd.on{width:24px;border-radius:3px;background:var(--lime)}
+.pd.dn{background:#CFD8A8}
+
+.breadcrumb{min-height:24px;padding:6px 20px 0;display:flex;align-items:center;gap:0;flex-wrap:wrap}
+.bc-item{font-size:11px;color:#999;letter-spacing:0.02em}
+.bc-item.active{color:var(--ink);font-weight:600}
+.bc-sep{font-size:11px;color:#CCC;padding:0 5px}
+
+.step{display:none}
+.step.active{display:block;animation:fi 0.28s ease forwards}
+@keyframes fi{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+.shead{text-align:center;padding:18px 20px 14px}
+.stitle{font-family:'Archivo',sans-serif;font-size:30px;font-weight:800;color:var(--ink);letter-spacing:0.01em;line-height:1.02;text-transform:uppercase}
+.ssub{font-size:13px;color:#888;margin:6px auto 0;max-width:480px;line-height:1.55}
+
+.og{display:grid;gap:3px}
+.oc{background:var(--ink);min-height:132px;padding:1.6rem 1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:0.6rem;border:2px solid transparent;transition:border-color 0.13s,filter 0.15s;text-align:center;position:relative;overflow:hidden}
+.oc:hover{filter:brightness(1.22)}
+.oc.sel{border-color:var(--lime)}
+.oc.sel::after{content:"\2713";position:absolute;top:8px;right:10px;color:var(--lime);font-size:14px;font-weight:700;font-family:'Inter',sans-serif}
+.oc.disabled,.oc.feat-disabled{filter:brightness(0.4);cursor:not-allowed;pointer-events:none}
+.oic{color:#fff;font-size:26px;line-height:1}
+.ol{font-family:'Inter',sans-serif;color:#fff;font-size:15px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase}
+.os{color:rgba(255,255,255,0.4);font-size:11px;margin-top:1px}
+.ocount{position:absolute;bottom:8px;left:0;right:0;text-align:center;color:rgba(255,255,255,0.32);font-size:10px;letter-spacing:0.04em}
+
+.skip-wrap{text-align:center;padding:10px 0 4px}
+.skip-link{background:none;border:none;color:#888;font-size:12px;cursor:pointer;font-family:'Inter',sans-serif;letter-spacing:0.04em;text-decoration:underline;padding:6px 12px}
+.skip-link:hover{color:#333}
+
+.cbar{text-align:center;font-size:12px;color:#999;padding:10px;border-top:1px solid #F0F0F0;letter-spacing:0.04em}
+.cbar b{color:var(--ink);font-size:14px;font-family:'Inter',sans-serif}
+
+.navrow{padding:12px 20px 0;display:flex;align-items:center}
+.btnback{background:transparent;border:1px solid #DDD;color:#555;padding:6px 16px;border-radius:20px;cursor:pointer;font-size:12px;font-family:'Inter',sans-serif;display:inline-flex;align-items:center;gap:6px;transition:border-color 0.13s,color 0.13s}
+.btnback:hover{border-color:var(--accent);color:var(--ink)}
+
+.feat-meta{display:flex;justify-content:space-between;align-items:center;padding:4px 20px 8px}
+.feat-hint{font-size:12px;color:#999;letter-spacing:0.04em}
+.feat-max{font-size:11px;color:var(--accent);font-weight:600;opacity:0;transition:opacity 0.2s}
+.feat-max.show{opacity:1}
+.feat-cta{text-align:center;padding:14px 20px 6px}
+.btnver{background:var(--accent);color:#fff;border:none;padding:12px 40px;border-radius:2px;font-size:15px;font-weight:700;font-family:'Inter',sans-serif;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;transition:background 0.15s;width:100%}
+.btnver:hover{background:var(--accent-dk)}
+
+.plp-wrap{padding:16px 20px 0}
+.plp-top{display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:6px}
+.plp-title{font-family:'Archivo',sans-serif;font-size:24px;font-weight:800;color:var(--ink);letter-spacing:0.01em;text-transform:uppercase}
+.plp-range{font-size:12px;color:#999;margin-top:2px}
+.plp-restart{background:none;border:none;color:#888;font-size:12px;cursor:pointer;font-family:'Inter',sans-serif;text-decoration:underline}
+.plp-restart:hover{color:var(--ink)}
+.pill-row{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0;border-bottom:1px solid #F0F0F0;padding-bottom:10px}
+.pill{border:1px solid #DDD;background:transparent;color:#666;padding:5px 14px;border-radius:20px;font-size:12px;cursor:pointer;font-family:'Inter',sans-serif;transition:border-color 0.13s,color 0.13s}
+.pill:hover{border-color:#999;color:var(--ink)}
+.pill.active{border-color:var(--ink);color:var(--ink);background:#EDEFDC}
+.sort-pill{margin-left:auto}
+
+.pgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding-bottom:24px}
+.pcard{background:#fff;border:1px solid #EBEBEB;border-radius:2px;overflow:hidden;transition:border-color 0.13s,box-shadow 0.13s;display:flex;flex-direction:column}
+.pcard:hover{border-color:#CCC;box-shadow:0 2px 12px rgba(0,0,0,0.07)}
+.pimg{width:100%;aspect-ratio:1;background:#F5F5F5;overflow:hidden;position:relative}
+.pimg img{width:100%;height:100%;object-fit:cover;transition:transform 0.25s}
+.pcard:hover .pimg img{transform:scale(1.04)}
+.pimg-fallback{width:100%;height:100%;display:none;align-items:center;justify-content:center;background:linear-gradient(135deg,#1a1a1a,#333)}
+.disc-badge{position:absolute;top:8px;left:8px;background:var(--lime);color:#141414;font-family:'Inter',sans-serif;font-weight:700;font-size:12px;letter-spacing:0.04em;padding:2px 8px;border-radius:2px}
+.pbody{padding:10px 12px 12px;flex:1;display:flex;flex-direction:column;gap:4px}
+.pname{font-size:12px;font-weight:500;color:var(--ink);line-height:1.35}
+.price-row{display:flex;align-items:baseline;gap:7px;flex-wrap:wrap}
+.pprice{font-family:'Inter',sans-serif;font-size:16px;color:var(--ink);letter-spacing:0.02em;font-weight:700}
+.pfull{font-size:12px;color:#AAA;text-decoration:line-through}
+.pcolors{font-size:10px;color:#999;letter-spacing:0.02em}
+.ptags{display:flex;gap:4px;flex-wrap:wrap;margin-top:4px}
+.ptag{background:#F5F5F5;color:#666;font-size:10px;padding:2px 7px;border-radius:2px;letter-spacing:0.02em}
+.ptag.tipo{background:#EDEFDC;color:var(--accent-dk);font-weight:600}
+.ptag.match{background:#E4EBC4;color:var(--accent-dk)}
+.plink{display:block;text-align:center;padding:8px;background:var(--ink);color:#fff;font-family:'Inter',sans-serif;font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;text-decoration:none;margin-top:auto;transition:background 0.13s}
+.plink:hover{background:var(--red)}
+
+.empty-state{grid-column:1/-1;text-align:center;padding:3rem 1rem}
+.empty-state h4{font-family:'Archivo',sans-serif;font-size:20px;font-weight:800;letter-spacing:0.01em;text-transform:uppercase;margin-bottom:8px}
+.empty-state p{font-size:13px;color:#888;margin-bottom:16px}
+.btnrestart{background:var(--ink);color:#fff;border:none;padding:10px 28px;border-radius:2px;font-size:13px;font-weight:600;font-family:'Inter',sans-serif;letter-spacing:0.07em;text-transform:uppercase;cursor:pointer}
+
+@media(max-width:540px){.pgrid{grid-template-columns:repeat(2,1fr)}.stitle{font-size:24px}}
+</style>
+</head>
+<body>
+<div class="finder">
+
+  <div class="promobar">SUSCRÍBETE Y OBTÉN 10% OFF EN TU PRIMERA COMPRA</div>
+  <div class="topbar">
+    <span class="logo">MAMMUT</span>
+    <span class="topbar-sub">/ Encuentra tu calzado ideal</span>
+  </div>
+
+  <div class="prog-wrap">
+    <div style="padding:12px 20px 0">
+      <div class="prog-row">
+        <span class="prog-label" id="step-label">Paso 1 de 4</span>
+        <div class="prog-dots" id="prog">
+          <div class="pd on" data-s="1"></div><div class="pd" data-s="2"></div>
+          <div class="pd" data-s="3"></div><div class="pd" data-s="4"></div>
+        </div>
+      </div>
+    </div>
+    <div class="breadcrumb" id="bc"></div>
+  </div>
+
+  <!-- STEP 1: Genero -->
+  <div class="step active" id="s1">
+    <div class="shead">
+      <h2 class="stitle">¿Para quién es?</h2>
+      <p class="ssub">Cada modelo tiene una horma y un calce pensados para hombre y mujer.</p>
+    </div>
+    <div class="og" style="grid-template-columns:repeat(2,1fr)">
+      <div class="oc" data-val="hombre" onclick="p1(this)">
+        <svg class="oic" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+        <span class="ol">Hombre</span>
+      </div>
+      <div class="oc" data-val="mujer" onclick="p1(this)">
+        <svg class="oic" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/><path d="M12 17v4M10 19h4" opacity=".6"/></svg>
+        <span class="ol">Mujer</span>
+      </div>
+    </div>
+    <div class="cbar"><b id="c1">--</b> modelos disponibles</div>
+  </div>
+
+  <!-- STEP 2: Condiciones -->
+  <div class="step" id="s2">
+    <div class="navrow"><button class="btnback" onclick="bk()">&#8592; Paso anterior</button></div>
+    <div class="shead">
+      <h2 class="stitle">¿Dónde los vas a usar?</h2>
+      <p class="ssub">Elige el terreno principal donde vas a usar el calzado.</p>
+    </div>
+    <div class="og" id="cg" style="grid-template-columns:repeat(2,1fr)"></div>
+    <div class="cbar"><b id="c2">--</b> modelos disponibles</div>
+  </div>
+
+  <!-- STEP 3: Tipo -->
+  <div class="step" id="s3">
+    <div class="navrow"><button class="btnback" onclick="bk()">&#8592; Paso anterior</button></div>
+    <div class="shead">
+      <h2 class="stitle">¿Qué tipo de calzado?</h2>
+      <p class="ssub">Bototo, media caña o zapatilla baja. Si no tienes preferencia, salta este paso.</p>
+    </div>
+    <div class="og" id="tg"></div>
+    <div class="skip-wrap"><button class="skip-link" onclick="skipTipo()">Saltar este paso &#8594;</button></div>
+    <div class="cbar"><b id="c3">--</b> modelos disponibles</div>
+  </div>
+
+  <!-- STEP 4: Funcionalidades -->
+  <div class="step" id="s4">
+    <div class="navrow"><button class="btnback" onclick="bk()">&#8592; Paso anterior</button></div>
+    <div class="shead">
+      <h2 class="stitle">¿Qué funcionalidades priorizas?</h2>
+      <p class="ssub">Elige hasta cuatro características clave para tu calzado.</p>
+    </div>
+    <div class="feat-meta">
+      <span class="feat-hint" id="fh">0 de 4 seleccionadas</span>
+      <span class="feat-max" id="fmax">Máximo alcanzado</span>
+    </div>
+    <div class="og" id="fg" style="grid-template-columns:repeat(4,1fr)"></div>
+    <div class="skip-wrap"><button class="skip-link" onclick="skipFeats()">Saltar este paso &#8594;</button></div>
+    <div class="feat-cta" id="fc" style="display:none">
+      <button class="btnver" onclick="showPLP()">Ver resultados &#8594;</button>
+    </div>
+    <div class="cbar"><b id="c4">--</b> modelos disponibles</div>
+  </div>
+
+  <!-- STEP 5: PLP -->
+  <div class="step" id="s5">
+    <div class="navrow" style="justify-content:space-between">
+      <button class="btnback" onclick="bk()">&#8592; Paso anterior</button>
+      <button class="plp-restart" onclick="restart()">Comenzar de nuevo</button>
+    </div>
+    <div class="plp-wrap">
+      <div class="plp-top">
+        <div>
+          <h2 class="plp-title" id="pt">--</h2>
+          <p class="plp-range" id="prange">Tu selección personalizada.</p>
+        </div>
+      </div>
+      <div class="pill-row">
+        <button class="pill" id="pill-asc" onclick="sortBy('asc')">Menor precio</button>
+        <button class="pill" id="pill-desc" onclick="sortBy('desc')">Mayor precio</button>
+        <button class="pill sort-pill active" id="pill-def" onclick="sortBy('def')">Relevancia</button>
+      </div>
+      <div class="pgrid" id="pgrid"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const PRODUCTS = [{"id":"3010-01020_MM7535","name":"Zapato Hombre Kento Tour High GTX","price":299990,"pfull":null,"disc":null,"img":"https://www.mammut.cl/media/catalog/product/3/0/3010-01020_mm7535_1_3.jpg","url":"https://www.mammut.cl/zapato-hombre-kento-tour-high-gtx-3010-01020-mm7535","g":["hombre"],"c":["media_mon"],"tipo":"alta","f":["impermeable","vibram","crampones"]},{"id":"3010-01030_MM00456","name":"Bototo Mujer Mammut Kento Tour High GTX®","price":299990,"pfull":null,"disc":null,"img":"https://www.mammut.cl/media/catalog/product/3/0/3010-01030_m00456_1.jpg","url":"https://www.mammut.cl/bototo-mujer-mammut-kento-tour-high-gtx-3010-01030-mm00456","g":["mujer"],"c":["media_mon"],"tipo":"alta","f":["impermeable","vibram"]},{"id":"3010-01061_MM00520","name":"Zapato Hombre Nordwand 6000 High","price":999990,"pfull":null,"disc":null,"img":"https://www.mammut.cl/media/catalog/product/3/0/3010-01061_mm00520_1_1_3umpix47vvtxnoej.jpg","url":"https://www.mammut.cl/zapato-hombre-nordwand-6000-high-3010-01061-mm00520","g":["hombre"],"c":["alta_mon"],"tipo":"alta","f":["vibram","crampones","aislamiento"]},{"id":"3020-06470_MM00720","name":"Zapatilla Mujer Hueco Knit II Low","price":99990,"pfull":199990,"disc":"-50%","img":"https://www.mammut.cl/media/catalog/product/3/0/3020-06470_mm00720_1_1.jpg","url":"https://www.mammut.cl/zapatilla-mujer-hueco-knit-ii-low-3020-06470-mm00720","g":["mujer"],"c":["deportiva"],"tipo":"baja","f":[]},{"id":"3020-06500_MM9231","name":"Zapatilla Hombre Alnasca Knit III Low GTX","price":174990,"pfull":249990,"disc":"-30%","img":"https://www.mammut.cl/media/catalog/product/3/0/3020-06500_mm9231_1_3_x0ml7w7znefgrzmq.jpg","url":"https://www.mammut.cl/zapatilla-hombre-alnasca-knit-iii-low-gtx-3020-06500-mm9231","g":["hombre"],"c":["trekking"],"tipo":"baja","f":["impermeable","vibram"]},{"id":"3020-06510_MM3771","name":"Zapatilla Mujer Alnasca Knit III Low GTX","price":149990,"pfull":249990,"disc":"-40%","img":"https://www.mammut.cl/media/catalog/product/3/0/3020-06510_mm3771_1_2.jpg","url":"https://www.mammut.cl/zapatilla-mujer-alnasca-knit-iii-low-gtx-3020-06510-mm3771","g":["mujer"],"c":["trekking"],"tipo":"baja","f":["impermeable","vibram"]},{"id":"3030-03450_MM0052","name":"Zapato Hombre Mammut Mercury Tour II High GTX®","price":269990,"pfull":null,"disc":null,"img":"https://www.mammut.cl/media/catalog/product/3/0/3030-03450_m0052_1.jpg","url":"https://www.mammut.cl/zapato-hombre-mammut-mercury-tour-ii-high-gtx-3030-03450-mm0052","g":["hombre"],"c":["media_mon"],"tipo":"alta","f":["impermeable","vibram"]},{"id":"3030-03460_MM7443","name":"Bototo Mujer Mammut Nova Tour II High GTX®","price":269990,"pfull":null,"disc":null,"img":"https://www.mammut.cl/media/catalog/product/3/0/3030-03460_m7443_1.jpg","url":"https://www.mammut.cl/bototo-mujer-mammut-nova-tour-ii-high-gtx-3030-03460-mm7443","g":["mujer"],"c":["media_mon"],"tipo":"alta","f":["impermeable","vibram"]},{"id":"3030-04251_MM00759","name":"Bototo Mujer Mammut Sapuen High GTX","price":143990,"pfull":239990,"disc":"-40%","img":"https://www.mammut.cl/media/catalog/product/3/0/3030-04251_mm00759_1_1.jpg","url":"https://www.mammut.cl/bototo-mujer-mammut-sapuen-high-gtx-3030-04251-mm00759","g":["mujer"],"c":["media_mon"],"tipo":"alta","f":["impermeable","vibram"]},{"id":"3030-04280_MM0001","name":"Zapatilla Hombre Sertig II Low GTX","price":113990,"pfull":189990,"disc":"-40%","img":"https://www.mammut.cl/media/catalog/product/3/0/3030-04280_mm0001_1_2_2zwygatfibkipfqs.jpg","url":"https://www.mammut.cl/zapatilla-hombre-sertig-ii-low-gtx-3030-04280-mm0001","g":["hombre"],"c":["deportiva"],"tipo":"baja","f":["impermeable"]},{"id":"3030-04280_MM00533","name":"Zapatilla Hombre Mammut Sertig II Low GTX®","price":113990,"pfull":189990,"disc":"-40%","img":"https://www.mammut.cl/media/catalog/product/3/0/3030-04280_mm00533_1.jpg","url":"https://www.mammut.cl/zapatilla-hombre-mammut-sertig-ii-low-gtx-3030-04280-mm00533","g":["hombre"],"c":["deportiva"],"tipo":"baja","f":["impermeable"]},{"id":"3030-04290_MM00575","name":"Zapatilla Mujer Mammut Sertig II Low GTX®","price":113990,"pfull":189990,"disc":"-40%","img":"https://www.mammut.cl/media/catalog/product/3/0/3030-04290_mm00575_1_3.jpg","url":"https://www.mammut.cl/zapatilla-mujer-mammut-sertig-ii-low-gtx-3030-04290-mm00575","g":["mujer"],"c":["deportiva"],"tipo":"baja","f":["impermeable"]},{"id":"3030-04700_MM00667","name":"Zapatilla Hombre Mammut Mercury IV Low GTX®","price":199990,"pfull":null,"disc":null,"img":"https://www.mammut.cl/media/catalog/product/3/0/3030-04700_mm00667_1_1_hmmcofw8dmo7p37i.jpg","url":"https://www.mammut.cl/zapatilla-hombre-mammut-mercury-iv-low-gtx-3030-04700-mm00667","g":["hombre"],"c":["trekking"],"tipo":"baja","f":["impermeable","vibram"]},{"id":"3030-04700_MM0486","name":"Zapatilla Hombre Mammut Mercury IV Low GTX®","price":199990,"pfull":null,"disc":null,"img":"https://www.mammut.cl/media/catalog/product/3/0/3030-04700_mm0486_1_1_vmfohotp4c7sipyc.jpg","url":"https://www.mammut.cl/zapatilla-hombre-mammut-mercury-iv-low-gtx-3030-04700-mm0486","g":["hombre"],"c":["trekking"],"tipo":"baja","f":["impermeable","vibram"]},{"id":"3030-04710_MM0001","name":"Zapato Hombre Mammut Mercury IV Mid GTX®","price":159990,"pfull":229990,"disc":"-30%","img":"https://www.mammut.cl/media/catalog/product/3/0/3030-04710_mm0001_1_1.jpg","url":"https://www.mammut.cl/zapato-hombre-mammut-mercury-iv-mid-gtx-3030-04710-mm0001","g":["hombre"],"c":["media_mon"],"tipo":"media","f":["impermeable","vibram"]},{"id":"3030-04710_MM00293","name":"Zapato Hombre Mammut Mercury IV Mid GTX®","price":229990,"pfull":null,"disc":null,"img":"https://www.mammut.cl/media/catalog/product/3/0/3030-04710_mm00293_1_1.jpg","url":"https://www.mammut.cl/zapato-hombre-mammut-mercury-iv-mid-gtx-3030-04710-mm00293","g":["hombre"],"c":["media_mon"],"tipo":"media","f":["impermeable","vibram"]},{"id":"3030-04710_MM00654","name":"Zapato Hombre Mammut Mercury IV Mid GTX®","price":229990,"pfull":null,"disc":null,"img":"https://www.mammut.cl/media/catalog/product/3/0/3030-04710_mm00654_1_1.jpg","url":"https://www.mammut.cl/zapato-hombre-mammut-mercury-iv-mid-gtx-3030-04710-mm00654","g":["hombre"],"c":["media_mon"],"tipo":"media","f":["impermeable","vibram"]},{"id":"3030-04710_MM40230","name":"Zapato Hombre Mammut Mercury IV Mid GTX®","price":229990,"pfull":null,"disc":null,"img":"https://www.mammut.cl/media/catalog/product/3/0/3030-04710_mm40230_1.jpg","url":"https://www.mammut.cl/zapato-hombre-mammut-mercury-iv-mid-gtx-3030-04710-mm40230","g":["hombre"],"c":["media_mon"],"tipo":"media","f":["impermeable","vibram"]},{"id":"3030-04710_MM40234","name":"Zapato Hombre Mammut Mercury IV Mid GTX®","price":229990,"pfull":null,"disc":null,"img":"https://www.mammut.cl/media/catalog/product/3/0/3030-04710_mm40234_1_1.jpg","url":"https://www.mammut.cl/zapato-hombre-mammut-mercury-iv-mid-gtx-3030-04710-mm40234","g":["hombre"],"c":["media_mon"],"tipo":"media","f":["impermeable","vibram"]},{"id":"3030-04720_MM00669","name":"Zapatilla Mujer Mammut Nova IV Low GTX®","price":139990,"pfull":199990,"disc":"-30%","img":"https://www.mammut.cl/media/catalog/product/3/0/3030-04720_mm00669_1.jpg","url":"https://www.mammut.cl/zapatilla-mujer-mammut-nova-iv-low-gtx-3030-04720-mm00669","g":["mujer"],"c":["trekking"],"tipo":"baja","f":["impermeable","vibram"]},{"id":"3030-04730_MM0001","name":"Zapato Mujer Mammut Nova IV Mid GTX®","price":159990,"pfull":229990,"disc":"-30%","img":"https://www.mammut.cl/media/catalog/product/3/0/3030-04730_mm0001_1_1.jpg","url":"https://www.mammut.cl/zapato-mujer-mammut-nova-iv-mid-gtx-3030-04730-mm0001","g":["mujer"],"c":["media_mon"],"tipo":"media","f":["impermeable","vibram"]},{"id":"3030-04730_MM00668","name":"Zapato Mujer Mammut Nova IV Mid GTX®","price":229990,"pfull":null,"disc":null,"img":"https://www.mammut.cl/media/catalog/product/3/0/3030-04730_mm00668_1.jpg","url":"https://www.mammut.cl/zapato-mujer-mammut-nova-iv-mid-gtx-3030-04730-mm00668","g":["mujer"],"c":["media_mon"],"tipo":"media","f":["impermeable","vibram"]},{"id":"3030-04730_MM00670","name":"Zapato Mujer Mammut Nova IV Mid GTX®","price":229990,"pfull":null,"disc":null,"img":"https://www.mammut.cl/media/catalog/product/3/0/3030-04730_mm00670_1.jpg","url":"https://www.mammut.cl/zapato-mujer-mammut-nova-iv-mid-gtx-3030-04730-mm00670","g":["mujer"],"c":["media_mon"],"tipo":"media","f":["impermeable","vibram"]},{"id":"3030-04730_MM00760","name":"Zapato Mujer Mammut Nova IV Mid GTX®","price":229990,"pfull":null,"disc":null,"img":"https://www.mammut.cl/media/catalog/product/3/0/3030-04730_mm00760_1_2.jpg","url":"https://www.mammut.cl/zapato-mujer-mammut-nova-iv-mid-gtx-3030-04730-mm00760","g":["mujer"],"c":["media_mon"],"tipo":"media","f":["impermeable","vibram"]},{"id":"3030-04730_MM40227","name":"Zapato Mujer Mammut Nova IV Mid GTX®","price":229990,"pfull":null,"disc":null,"img":"https://www.mammut.cl/media/catalog/product/3/0/3030-04730_mm40227_1.jpg","url":"https://www.mammut.cl/zapato-mujer-mammut-nova-iv-mid-gtx-3030-04730-mm40227","g":["mujer"],"c":["media_mon"],"tipo":"media","f":["impermeable","vibram"]},{"id":"3030-04800_MM00651","name":"Zapato Mujer Ensi Mid GTX","price":84990,"pfull":169990,"disc":"-50%","img":"https://www.mammut.cl/media/catalog/product/3/0/3030-04800_mm00651_1.jpg","url":"https://www.mammut.cl/zapato-mujer-ensi-mid-gtx-3030-04800-mm00651","g":["mujer"],"c":["media_mon"],"tipo":"media","f":["impermeable","vibram"]},{"id":"3030-04830_MM00692","name":"Zapato Hombre Mammut Sertig II Mid GTX®","price":125990,"pfull":209990,"disc":"-40%","img":"https://www.mammut.cl/media/catalog/product/3/0/3030-04830_mm00692_1_1.jpg","url":"https://www.mammut.cl/zapato-hombre-mammut-sertig-ii-mid-gtx-3030-04830-mm00692","g":["hombre"],"c":["media_mon"],"tipo":"media","f":["impermeable"]},{"id":"3030-04830_MM00693","name":"Zapato Hombre Mammut Sertig II Mid GTX®","price":125990,"pfull":209990,"disc":"-40%","img":"https://www.mammut.cl/media/catalog/product/3/0/3030-04830_mm00693_1_1.jpg","url":"https://www.mammut.cl/zapato-hombre-mammut-sertig-ii-mid-gtx-3030-04830-mm00693","g":["hombre"],"c":["media_mon"],"tipo":"media","f":["impermeable"]},{"id":"3030-04840_MM0001","name":"Zapato Mujer Mammut Sertig II Mid GTX®","price":125990,"pfull":209990,"disc":"-40%","img":"https://www.mammut.cl/media/catalog/product/3/0/3030-04840_mm0001_1_1_iyqemjeyyzs7n6hw.jpg","url":"https://www.mammut.cl/zapato-mujer-mammut-sertig-ii-mid-gtx-3030-04840-mm0001","g":["mujer"],"c":["media_mon"],"tipo":"media","f":["impermeable"]},{"id":"3030-04840_MM00691","name":"Zapato Mujer Mammut Sertig II Mid GTX®","price":125990,"pfull":209990,"disc":"-40%","img":"https://www.mammut.cl/media/catalog/product/3/0/3030-04840_mm00691_1.jpg","url":"https://www.mammut.cl/zapato-mujer-mammut-sertig-ii-mid-gtx-3030-04840-mm00691","g":["mujer"],"c":["media_mon"],"tipo":"media","f":["impermeable"]},{"id":"3030-04840_MM7493","name":"Zapato Mujer Mammut Sertig II Mid GTX®","price":125990,"pfull":209990,"disc":"-40%","img":"https://www.mammut.cl/media/catalog/product/3/0/3030-04840_mm7493_1_1.jpg","url":"https://www.mammut.cl/zapato-mujer-mammut-sertig-ii-mid-gtx-3030-04840-mm7493","g":["mujer"],"c":["media_mon"],"tipo":"media","f":["impermeable"]},{"id":"3030-05040_MM0001","name":"Zapato Hombre Ducan II High GTX","price":143990,"pfull":239990,"disc":"-40%","img":"https://www.mammut.cl/media/catalog/product/3/0/3030-05040_mm0001_1_1.jpg","url":"https://www.mammut.cl/zapato-hombre-ducan-ii-high-gtx-3030-05040-mm0001","g":["hombre"],"c":["media_mon"],"tipo":"alta","f":["impermeable","vibram"]},{"id":"3030-05040_MM00698","name":"Zapato Hombre Mammut Ducan II High GTX","price":143990,"pfull":239990,"disc":"-40%","img":"https://www.mammut.cl/media/catalog/product/3/0/3030-05040_mm00698_1_2_y0wwxxyeqtrp5ufk.jpg","url":"https://www.mammut.cl/zapato-hombre-mammut-ducan-ii-high-gtx-3030-05040-mm00698","g":["hombre"],"c":["media_mon"],"tipo":"alta","f":["impermeable","vibram"]},{"id":"3030-05040_MM40280","name":"Zapato Hombre Ducan II High GTX","price":143990,"pfull":239990,"disc":"-40%","img":"https://www.mammut.cl/media/catalog/product/3/0/3030-05040_mm40280_1_2.jpg","url":"https://www.mammut.cl/zapato-hombre-ducan-ii-high-gtx-3030-05040-mm40280","g":["hombre"],"c":["media_mon"],"tipo":"alta","f":["impermeable","vibram"]},{"id":"3030-05050_MM00771","name":"Zapato Mujer Mammut Ducan II High GTX","price":143990,"pfull":239990,"disc":"-40%","img":"https://www.mammut.cl/media/catalog/product/3/0/3030-05050_mm00771_1_1_9txartrcmi24siar.jpg","url":"https://www.mammut.cl/zapato-mujer-mammut-ducan-ii-high-gtx-3030-05050-mm00771","g":["mujer"],"c":["media_mon"],"tipo":"alta","f":["impermeable","vibram"]},{"id":"3030-05060_MM00698","name":"Zapatilla Hombre Ducan II Low GTX","price":125990,"pfull":209990,"disc":"-40%","img":"https://www.mammut.cl/media/catalog/product/3/0/3030-05060_mm00698_1_2_5za5jlp5rbbgrmjc.jpg","url":"https://www.mammut.cl/zapatilla-hombre-ducan-ii-low-gtx-3030-05060-mm00698","g":["hombre"],"c":["trekking"],"tipo":"baja","f":["impermeable","vibram"]},{"id":"3030-05070_MM0001","name":"Zapatilla Mujer Ducan II Low GTX","price":125990,"pfull":209990,"disc":"-40%","img":"https://www.mammut.cl/media/catalog/product/3/0/3030-05070_mm0001_1_1.jpg","url":"https://www.mammut.cl/zapatilla-mujer-ducan-ii-low-gtx-3030-05070-mm0001","g":["mujer"],"c":["trekking"],"tipo":"baja","f":["impermeable","vibram"]},{"id":"3030-05070_MM40281","name":"Zapatilla Mujer Ducan II Low GTX","price":125990,"pfull":209990,"disc":"-40%","img":"https://www.mammut.cl/media/catalog/product/3/0/3030-05070_mm40281_1_2.jpg","url":"https://www.mammut.cl/zapatilla-mujer-ducan-ii-low-gtx-3030-05070-mm40281","g":["mujer"],"c":["trekking"],"tipo":"baja","f":["impermeable","vibram"]},{"id":"3030-05090_MM0001","name":"Zapatilla Mujer Saentis Tr Low GTX","price":125990,"pfull":209990,"disc":"-40%","img":"https://www.mammut.cl/media/catalog/product/3/0/3030-05090_mm0001_1_1.jpg","url":"https://www.mammut.cl/zapatilla-mujer-saentis-tr-low-gtx-3030-05090-mm0001","g":["mujer"],"c":["deportiva"],"tipo":"baja","f":["impermeable"]},{"id":"3030-05220_MM50636","name":"Zapatilla Mujer Aenergy Hike Low GTX","price":113990,"pfull":189990,"disc":"-40%","img":"https://www.mammut.cl/media/catalog/product/3/0/3030-05220_mm50636_1_1.jpg","url":"https://www.mammut.cl/zapatilla-mujer-aenergy-hike-low-gtx-3030-05220-mm50636","g":["mujer"],"c":["trekking"],"tipo":"baja","f":["impermeable"]},{"id":"3030-05230_MM0001","name":"Zapatilla Hombre Aenergy Hike Low GTX","price":113990,"pfull":189990,"disc":"-40%","img":"https://www.mammut.cl/media/catalog/product/3/0/3030-05230_mm0001_1_2.jpg","url":"https://www.mammut.cl/zapatilla-hombre-aenergy-hike-low-gtx-3030-05230-mm0001","g":["hombre"],"c":["trekking"],"tipo":"baja","f":["impermeable"]},{"id":"3030-05240_MM00722","name":"Zapatilla Hombre Aenergy Hike Low","price":101990,"pfull":169990,"disc":"-40%","img":"https://www.mammut.cl/media/catalog/product/3/0/3030-05240_mm00722_1_1.jpg","url":"https://www.mammut.cl/zapatilla-hombre-aenergy-hike-low-3030-05240-mm00722","g":["hombre"],"c":["deportiva"],"tipo":"baja","f":[]},{"id":"3030-05250_MM00722","name":"Zapatilla Mujer Aenergy Hike Low","price":101990,"pfull":169990,"disc":"-40%","img":"https://www.mammut.cl/media/catalog/product/3/0/3030-05250_mm00722_1_2.jpg","url":"https://www.mammut.cl/zapatilla-mujer-aenergy-hike-low-3030-05250-mm00722","g":["mujer"],"c":["deportiva"],"tipo":"baja","f":[]},{"id":"3030-05330_MM9237","name":"Zapatilla Mujer Aenergy Mtn Mid GTX","price":137990,"pfull":229990,"disc":"-40%","img":"https://www.mammut.cl/media/catalog/product/3/0/3030-05330_mm9237_1_1.jpg","url":"https://www.mammut.cl/zapatilla-mujer-aenergy-mtn-mid-gtx-3030-05330-mm9237","g":["mujer"],"c":["deportiva"],"tipo":"media","f":["impermeable","vibram"]},{"id":"3030-05390_MM00704","name":"Zapatilla Mujer Girun II Low GTX","price":74990,"pfull":149990,"disc":"-50%","img":"https://www.mammut.cl/media/catalog/product/3/0/3030-05390_mm00704_1_2.jpg","url":"https://www.mammut.cl/zapatilla-mujer-girun-ii-low-gtx-3030-05390-mm00704","g":["mujer"],"c":["trekking"],"tipo":"baja","f":["impermeable"]},{"id":"3030-05420_MM0001","name":"Zapato Hombre Blackfin Leather GTX","price":215990,"pfull":359990,"disc":"-40%","img":"https://www.mammut.cl/media/catalog/product/3/0/3030-05420_mm0001_1_1.jpg","url":"https://www.mammut.cl/zapato-hombre-blackfin-leather-gtx-3030-05420-mm0001","g":["mujer"],"c":["trekking"],"tipo":"media","f":["impermeable","vibram","aislamiento"]},{"id":"3030-05560_MM0001","name":"Zapato Hombre Mammut Ducan III High GTX","price":239990,"pfull":null,"disc":null,"img":"https://www.mammut.cl/media/catalog/product/3/0/3030-05560_mm0001_1_1.jpg","url":"https://www.mammut.cl/zapato-hombre-mammut-ducan-iii-high-gtx-3030-05560-mm0001","g":["hombre"],"c":["media_mon"],"tipo":"alta","f":["impermeable","vibram"]},{"id":"3030-05570_MM0001","name":"Zapato Hombre Mammut Sertig III Mid GTX","price":219990,"pfull":null,"disc":null,"img":"https://www.mammut.cl/media/catalog/product/3/0/3030-05570_mm0001_1_2.jpg","url":"https://www.mammut.cl/zapato-hombre-mammut-sertig-iii-mid-gtx-3030-05570-mm0001","g":["hombre"],"c":["media_mon"],"tipo":"media","f":["impermeable"]},{"id":"3030-05570_MM00839","name":"Zapato Hombre Mammut Sertig III Mid GTX","price":219990,"pfull":null,"disc":null,"img":"https://www.mammut.cl/media/catalog/product/3/0/3030-05570_mm00839_1_1.jpg","url":"https://www.mammut.cl/zapato-hombre-mammut-sertig-iii-mid-gtx-3030-05570-mm00839","g":["hombre"],"c":["media_mon"],"tipo":"media","f":["impermeable","vibram"]},{"id":"3030-05580_MM0001","name":"Zapato Mujer Mammut Sertig III Mid GTX","price":219990,"pfull":null,"disc":null,"img":"https://www.mammut.cl/media/catalog/product/3/0/3030-05580_mm0001_1_2.jpg","url":"https://www.mammut.cl/zapato-mujer-mammut-sertig-iii-mid-gtx-3030-05580-mm0001","g":["mujer"],"c":["media_mon"],"tipo":"media","f":["impermeable"]},{"id":"3030-05610_MM0001","name":"Zapatilla Hombre Mammut Sertig III Low","price":169990,"pfull":null,"disc":null,"img":"https://www.mammut.cl/media/catalog/product/3/0/3030-05610_mm0001_1_1.jpg","url":"https://www.mammut.cl/zapatilla-hombre-mammut-sertig-iii-low-3030-05610-mm0001","g":["hombre"],"c":["trekking"],"tipo":"baja","f":[]},{"id":"3030-05610_MM00383","name":"Zapatilla Hombre Mammut Sertig III Low","price":169990,"pfull":null,"disc":null,"img":"https://www.mammut.cl/media/catalog/product/3/0/3030-05610_mm00383_1_2.jpg","url":"https://www.mammut.cl/zapatilla-hombre-mammut-sertig-iii-low-3030-05610-mm00383","g":["hombre"],"c":["trekking"],"tipo":"baja","f":[]}];
+
+const ST = {g:null,c:null,tipo:null,feat:[],step:1,sort:'def'};
+
+const COND = [
+  {id:'alta_mon',  l:'Alta montaña', s:'Alpinismo y crampones', svg:'<path d="M3 20l6-13 4 8 3-5 5 10z"/>'},
+  {id:'media_mon', l:'Media montaña',s:'Trekking exigente',     svg:'<path d="M3 20l5-10 4 6 5-9 4 13z"/>'},
+  {id:'trekking',  l:'Trekking',     s:'Senderos y hiking',     svg:'<path d="M4 20l5-8 3 4 4-7 4 11z"/>'},
+  {id:'deportiva', l:'Deportiva',    s:'Trail y uso diario',    svg:'<path d="M5 16c3 0 4-3 7-3s5 3 7 3M4 20h16"/>'},
+];
+
+const GEN_LABEL={hombre:'Hombre',mujer:'Mujer'};
+const COND_LABEL={alta_mon:'Alta montaña',media_mon:'Media montaña',trekking:'Trekking',deportiva:'Deportiva'};
+const TIPO_LABEL={alta:'Bototo · caña alta',media:'Media caña',baja:'Zapatilla · caña baja'};
+const TIPO_SUB={alta:'Máx. soporte de tobillo',media:'Soporte + agilidad',baja:'Ligera y flexible'};
+
+const FEATS = [
+  {id:'impermeable', l:'Impermeable · GTX',   svg:'<path d="M12 2C8 8 5 12 5 16a7 7 0 0014 0c0-4-3-8-7-14z"/>'},
+  {id:'vibram',      l:'Suela Vibram',        svg:'<path d="M6 15h12v3a2 2 0 01-2 2H8a2 2 0 01-2-2z"/><path d="M6 15c0-4 2-9 6-9s6 5 6 9"/>'},
+  {id:'crampones',   l:'Apto crampones',      svg:'<path d="M4 15h16M6 15v4M10 15v4M14 15v4M18 15v4M5 11l14-3"/>'},
+  {id:'aislamiento', l:'Aislamiento térmico', svg:'<path d="M12 2v20M4 6l16 12M20 6L4 18M2 12h20"/>'},
+];
+const FEAT_LABEL={impermeable:'Impermeable',vibram:'Vibram',crampones:'Crampones',aislamiento:'Aislamiento'};
+
+function fil(){
+  let r = PRODUCTS.filter(p=>{
+    if(ST.g && !p.g.includes(ST.g)) return false;
+    if(ST.c && !p.c.includes(ST.c)) return false;
+    if(ST.tipo && p.tipo!==ST.tipo) return false;
+    if(ST.feat.length>0 && !ST.feat.some(f=>p.f.includes(f))) return false;
+    return true;
+  });
+  if(ST.sort==='asc') r.sort((a,b)=>a.price-b.price);
+  else if(ST.sort==='desc') r.sort((a,b)=>b.price-a.price);
+  return r;
+}
+function countWith(over){
+  const s=Object.assign({},ST,over);
+  return PRODUCTS.filter(p=>{
+    if(s.g && !p.g.includes(s.g)) return false;
+    if(s.c && !p.c.includes(s.c)) return false;
+    if(s.tipo && p.tipo!==s.tipo) return false;
+    if(s.feat && s.feat.length>0 && !s.feat.some(f=>p.f.includes(f))) return false;
+    return true;
+  }).length;
+}
+function updC(){const n=fil().length;['c1','c2','c3','c4'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=n;});}
+
+function selCard(el){el.closest('.og').querySelectorAll('.oc').forEach(o=>o.classList.remove('sel'));el.classList.add('sel');}
+
+function p1(el){ST.g=el.dataset.val;ST.c=null;ST.tipo=null;ST.feat=[];selCard(el);buildCond();setTimeout(()=>go(2),280);}
+function p2(id,el){ST.c=id;ST.tipo=null;ST.feat=[];selCard(el);buildTipo();setTimeout(()=>go(3),280);}
+function pickTipo(id,el){ST.tipo=id;ST.feat=[];selCard(el);buildFeats();setTimeout(()=>go(4),280);}
+function skipTipo(){ST.tipo=null;ST.feat=[];buildFeats();go(4);}
+function skipFeats(){ST.feat=[];showPLP();}
+
+function buildCond(){
+  const g=document.getElementById('cg');
+  g.innerHTML=COND.map(o=>{
+    const n=countWith({c:o.id,tipo:null,feat:[]});
+    return `<div class="oc${n===0?' disabled':''}" onclick="${n===0?'':`p2('${o.id}',this)`}">
+      <svg class="oic" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">${o.svg}</svg>
+      <span class="ol">${o.l}</span><span class="os">${o.s}</span>
+      <span class="ocount">${n} modelo${n!==1?'s':''}</span></div>`;
+  }).join('');
+}
+function buildTipo(){
+  const tipos=[...new Set(fil().map(p=>p.tipo))];
+  const order=['alta','media','baja'];
+  tipos.sort((a,b)=>order.indexOf(a)-order.indexOf(b));
+  const cols=tipos.length<=2?2:tipos.length<=4?2:3;
+  const g=document.getElementById('tg');g.style.gridTemplateColumns='repeat('+cols+',1fr)';
+  g.innerHTML=tipos.map(t=>{
+    const n=countWith({tipo:t,feat:[]});
+    return `<div class="oc" onclick="pickTipo('${t}',this)">
+      <span class="ol">${TIPO_LABEL[t]||t}</span><span class="os">${TIPO_SUB[t]||''}</span>
+      <span class="ocount">${n} modelo${n!==1?'s':''}</span></div>`;
+  }).join('');
+}
+function buildFeats(){
+  ST.feat=[];
+  const avail=new Set();fil().forEach(p=>p.f.forEach(f=>avail.add(f)));
+  document.getElementById('fc').style.display='none';
+  document.getElementById('fh').textContent='0 de 4 seleccionadas';
+  document.getElementById('fmax').classList.remove('show');
+  document.getElementById('fg').innerHTML=FEATS.map(f=>{
+    const dis=!avail.has(f.id);
+    return `<div class="oc${dis?' disabled':''}" ${dis?'':`onclick="toggleFeat('${f.id}',this)"`} data-fid="${f.id}">
+      <svg class="oic" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">${f.svg}</svg>
+      <span class="ol" style="font-size:13px">${f.l}</span></div>`;
+  }).join('');
+}
+function toggleFeat(v,el){
+  const i=ST.feat.indexOf(v);
+  if(i>=0){ST.feat.splice(i,1);el.classList.remove('sel');}
+  else{if(ST.feat.length>=4){document.getElementById('fmax').classList.add('show');return;}ST.feat.push(v);el.classList.add('sel');}
+  document.getElementById('fmax').classList.toggle('show',ST.feat.length>=4);
+  document.querySelectorAll('#fg .oc:not(.sel):not(.disabled)').forEach(c=>c.classList.toggle('feat-disabled',ST.feat.length>=4));
+  document.getElementById('fh').textContent=ST.feat.length+' de 4 seleccionadas';
+  document.getElementById('fc').style.display=ST.feat.length>0?'block':'none';
+  updC();
+}
+
+function sortBy(s){ST.sort=s;['asc','desc','def'].forEach(k=>document.getElementById('pill-'+k).classList.toggle('active',k===s));renderPLP();}
+function fmtCLP(n){return '$'+n.toLocaleString('es-CL');}
+
+function renderPLP(){
+  const r=fil();
+  document.getElementById('pt').textContent=r.length+' Modelo'+(r.length!==1?'s':'');
+  if(r.length>0){const pr=r.map(p=>p.price),mn=Math.min(...pr),mx=Math.max(...pr);
+    document.getElementById('prange').textContent=mn===mx?'Precio: '+fmtCLP(mn):'Desde '+fmtCLP(mn)+' hasta '+fmtCLP(mx);}
+  const g=document.getElementById('pgrid');
+  if(!r.length){g.innerHTML=`<div class="empty-state"><h4>Sin resultados</h4><p>No encontramos modelos para esta combinación.<br>Ajusta los filtros o empieza de nuevo.</p><button class="btnrestart" onclick="restart()">Comenzar de nuevo</button></div>`;return;}
+  g.innerHTML=r.map(p=>{
+    const match=ST.feat.filter(f=>p.f.includes(f)).map(f=>`<span class="ptag match">${FEAT_LABEL[f]||f}</span>`).join('');
+    const tipoTag=`<span class="ptag tipo">${TIPO_LABEL[p.tipo]||p.tipo}</span>`;
+    const disc=p.disc?`<span class="disc-badge">-${p.disc}</span>`:'';
+    const full=p.pfull?`<span class="pfull">${fmtCLP(p.pfull)}</span>`:'';
+    const colors=p.ncolors>1?`<span class="pcolors">${p.ncolors} colores</span>`:'';
+    return `<div class="pcard">
+      <div class="pimg">${disc}
+        <img src="${p.img}" alt="${p.name}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div class="pimg-fallback"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1"><path d="M12 3c-5 0-8 4-8 9 0 3 2 6 8 9 6-3 8-6 8-9 0-5-3-9-8-9z"/></svg></div>
+      </div>
+      <div class="pbody">
+        <p class="pname">${p.name}</p>
+        <div class="price-row"><span class="pprice">${fmtCLP(p.price)}</span>${full}${colors}</div>
+        <div class="ptags">${tipoTag}${match}</div>
+      </div>
+      <a class="plink" href="${p.url}" target="_blank" rel="noopener">Ver producto &rarr;</a>
+    </div>`;
+  }).join('');
+}
+function showPLP(){renderPLP();go(5);}
+
+function bk(){
+  const p=ST.step-1;if(p<1)return;
+  if(ST.step===4){ST.feat=[];document.getElementById('fc').style.display='none';}
+  if(ST.step===3){ST.tipo=null;}
+  if(ST.step===2){ST.c=null;}
+  if(p===1||p===2){setTimeout(()=>{const v=p===1?ST.g:ST.c;const sid='#s'+p;if(v){const e=document.querySelector(sid+' [data-val="'+v+'"]')||[...document.querySelectorAll(sid+' .oc')].find(x=>x.getAttribute('onclick')&&x.getAttribute('onclick').includes("'"+v+"'"));if(e){document.querySelectorAll(sid+' .oc').forEach(o=>o.classList.remove('sel'));e.classList.add('sel');}}},30);}
+  if(p===4){setTimeout(()=>{document.getElementById('fh').textContent=ST.feat.length+' de 4 seleccionadas';document.getElementById('fc').style.display=ST.feat.length>0?'block':'none';document.querySelectorAll('#fg .oc').forEach(e=>{e.classList.toggle('sel',ST.feat.includes(e.dataset.fid));e.classList.remove('feat-disabled');});},30);}
+  go(p);
+}
+function restart(){ST.g=null;ST.c=null;ST.tipo=null;ST.feat=[];ST.sort='def';ST.step=1;['asc','desc'].forEach(k=>document.getElementById('pill-'+k).classList.remove('active'));document.getElementById('pill-def').classList.add('active');document.querySelectorAll('.oc').forEach(o=>o.classList.remove('sel','feat-disabled'));go(1);}
+
+function updProg(n){
+  document.getElementById('step-label').textContent=n<=4?'Paso '+n+' de 4':'Tu selección';
+  document.querySelectorAll('#prog .pd').forEach(d=>{const ds=+d.dataset.s;d.className='pd'+(ds===n?' on':ds<n?' dn':'');});
+  document.querySelector('.prog-wrap').style.display=n===5?'none':'block';
+}
+function updBC(){
+  const bc=document.getElementById('bc');const parts=[];
+  if(ST.g)parts.push(GEN_LABEL[ST.g]);
+  if(ST.c)parts.push(COND_LABEL[ST.c]);
+  if(ST.tipo)parts.push(TIPO_LABEL[ST.tipo]);
+  else if(ST.step>=3&&ST.c)parts.push('<span style="color:#CCC">Cualquier tipo</span>');
+  if(ST.feat.length>0)parts.push(ST.feat.slice(0,2).map(f=>FEAT_LABEL[f]).join(', ')+(ST.feat.length>2?' +':''));
+  if(!parts.length){bc.innerHTML='';return;}
+  bc.innerHTML=parts.map((p,i)=>'<span class="bc-item'+(i===parts.length-1?' active':'')+'">'+p+'</span>'+(i<parts.length-1?'<span class="bc-sep">\u203A</span>':'')).join('');
+}
+function go(n){document.querySelectorAll('.step').forEach(e=>e.classList.remove('active'));document.getElementById('s'+n).classList.add('active');ST.step=n;updProg(n);updBC();updC();window.scrollTo({top:0,behavior:'smooth'});}
+
+updC();
+</script>
+</body>
+</html>
