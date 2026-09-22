@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Marmot Chile — Encuentra tu chaqueta</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--accent:#0057B8;--accent-dk:#00429A;--ink:#16181D;--paper:#fff;--bg:#f4f5f7;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Barlow',sans-serif;background:var(--bg);min-height:100vh;display:flex;justify-content:center;padding:2rem 1rem}
+.finder{width:100%;max-width:780px;background:var(--paper)}
+
+.topbar{background:var(--ink);padding:12px 20px;display:flex;align-items:center;gap:10px}
+.logo{color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:18px;letter-spacing:0.18em;display:inline-flex;align-items:center;gap:7px}
+.logo .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);display:inline-block}
+.topbar-sub{color:rgba(255,255,255,0.45);font-size:12px;letter-spacing:0.04em}
+
+.prog-wrap{padding:18px 20px 0}
+.prog-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.prog-label{font-size:11px;color:#999;letter-spacing:0.06em;text-transform:uppercase}
+.prog-dots{display:flex;gap:5px}
+.pd{width:7px;height:7px;border-radius:50%;background:#DDD;transition:all 0.22s}
+.pd.on{width:24px;border-radius:3px;background:var(--accent)}
+.pd.dn{background:#8fa9c9}
+
+.breadcrumb{min-height:24px;padding:6px 20px 0;display:flex;align-items:center;gap:0;flex-wrap:wrap}
+.bc-item{font-size:11px;color:#999;letter-spacing:0.02em}
+.bc-item.active{color:var(--ink);font-weight:600}
+.bc-sep{font-size:11px;color:#CCC;padding:0 5px}
+
+.step{display:none}
+.step.active{display:block;animation:fi 0.28s ease forwards}
+@keyframes fi{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+.shead{text-align:center;padding:18px 20px 14px}
+.stitle{font-family:'Barlow Condensed',sans-serif;font-size:30px;font-weight:700;color:var(--ink);letter-spacing:0.02em;text-transform:uppercase;line-height:1}
+.ssub{font-size:13px;color:#888;margin:6px auto 0;max-width:480px;line-height:1.55}
+
+.og{display:grid;gap:3px}
+.oc{background:var(--ink);min-height:132px;padding:1.6rem 1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:0.6rem;border:2px solid transparent;transition:border-color 0.13s,filter 0.15s;text-align:center;position:relative;overflow:hidden}
+.oc:hover{filter:brightness(1.22)}
+.oc.sel{border-color:var(--accent)}
+.oc.sel::after{content:"\2713";position:absolute;top:8px;right:10px;color:var(--accent);font-size:14px;font-weight:700;font-family:'Barlow Condensed',sans-serif}
+.oc.disabled,.oc.feat-disabled{filter:brightness(0.4);cursor:not-allowed;pointer-events:none}
+.oic{color:#fff;font-size:26px;line-height:1}
+.ol{font-family:'Barlow Condensed',sans-serif;color:#fff;font-size:15px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase}
+.os{color:rgba(255,255,255,0.4);font-size:11px;margin-top:1px}
+.ocount{position:absolute;bottom:8px;left:0;right:0;text-align:center;color:rgba(255,255,255,0.32);font-size:10px;letter-spacing:0.04em}
+
+.skip-wrap{text-align:center;padding:10px 0 4px}
+.skip-link{background:none;border:none;color:#888;font-size:12px;cursor:pointer;font-family:'Barlow',sans-serif;letter-spacing:0.04em;text-decoration:underline;padding:6px 12px}
+.skip-link:hover{color:#333}
+
+.cbar{text-align:center;font-size:12px;color:#999;padding:10px;border-top:1px solid #F0F0F0;letter-spacing:0.04em}
+.cbar b{color:var(--ink);font-size:14px;font-family:'Barlow Condensed',sans-serif}
+
+.navrow{padding:12px 20px 0;display:flex;align-items:center}
+.btnback{background:transparent;border:1px solid #DDD;color:#555;padding:6px 16px;border-radius:20px;cursor:pointer;font-size:12px;font-family:'Barlow',sans-serif;display:inline-flex;align-items:center;gap:6px;transition:border-color 0.13s,color 0.13s}
+.btnback:hover{border-color:var(--accent);color:var(--ink)}
+
+.feat-meta{display:flex;justify-content:space-between;align-items:center;padding:4px 20px 8px}
+.feat-hint{font-size:12px;color:#999;letter-spacing:0.04em}
+.feat-max{font-size:11px;color:var(--accent);font-weight:600;opacity:0;transition:opacity 0.2s}
+.feat-max.show{opacity:1}
+.feat-cta{text-align:center;padding:14px 20px 6px}
+.btnver{background:var(--accent);color:#fff;border:none;padding:12px 40px;border-radius:2px;font-size:15px;font-weight:700;font-family:'Barlow Condensed',sans-serif;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;transition:background 0.15s;width:100%}
+.btnver:hover{background:var(--accent-dk)}
+
+.plp-wrap{padding:16px 20px 0}
+.plp-top{display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:6px}
+.plp-title{font-family:'Barlow Condensed',sans-serif;font-size:24px;font-weight:700;color:var(--ink);letter-spacing:0.04em;text-transform:uppercase}
+.plp-range{font-size:12px;color:#999;margin-top:2px}
+.plp-restart{background:none;border:none;color:#888;font-size:12px;cursor:pointer;font-family:'Barlow',sans-serif;text-decoration:underline}
+.plp-restart:hover{color:var(--ink)}
+.pill-row{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0;border-bottom:1px solid #F0F0F0;padding-bottom:10px}
+.pill{border:1px solid #DDD;background:transparent;color:#666;padding:5px 14px;border-radius:20px;font-size:12px;cursor:pointer;font-family:'Barlow',sans-serif;transition:border-color 0.13s,color 0.13s}
+.pill:hover{border-color:#999;color:var(--ink)}
+.pill.active{border-color:var(--ink);color:var(--ink);background:#EEF3FA}
+.sort-pill{margin-left:auto}
+
+.pgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding-bottom:24px}
+.pcard{background:#fff;border:1px solid #EBEBEB;border-radius:2px;overflow:hidden;transition:border-color 0.13s,box-shadow 0.13s;display:flex;flex-direction:column}
+.pcard:hover{border-color:#CCC;box-shadow:0 2px 12px rgba(0,0,0,0.07)}
+.pimg{width:100%;aspect-ratio:1;background:#F5F5F5;overflow:hidden;position:relative}
+.pimg img{width:100%;height:100%;object-fit:cover;transition:transform 0.25s}
+.pcard:hover .pimg img{transform:scale(1.04)}
+.pimg-fallback{width:100%;height:100%;display:none;align-items:center;justify-content:center;background:linear-gradient(135deg,#1a1a1a,#333)}
+.disc-badge{position:absolute;top:8px;left:8px;background:var(--accent);color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;letter-spacing:0.04em;padding:2px 8px;border-radius:2px}
+.pbody{padding:10px 12px 12px;flex:1;display:flex;flex-direction:column;gap:4px}
+.pname{font-size:12px;font-weight:500;color:var(--ink);line-height:1.35}
+.price-row{display:flex;align-items:baseline;gap:7px;flex-wrap:wrap}
+.pprice{font-family:'Barlow Condensed',sans-serif;font-size:16px;color:var(--ink);letter-spacing:0.02em;font-weight:700}
+.pfull{font-size:12px;color:#AAA;text-decoration:line-through}
+.pcolors{font-size:10px;color:#999;letter-spacing:0.02em}
+.ptags{display:flex;gap:4px;flex-wrap:wrap;margin-top:4px}
+.ptag{background:#F5F5F5;color:#666;font-size:10px;padding:2px 7px;border-radius:2px;letter-spacing:0.02em}
+.ptag.tipo{background:#EEF3FA;color:var(--accent-dk);font-weight:600}
+.ptag.match{background:#E3EEFB;color:var(--accent-dk)}
+.plink{display:block;text-align:center;padding:8px;background:var(--ink);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;text-decoration:none;margin-top:auto;transition:background 0.13s}
+.plink:hover{background:var(--accent)}
+
+.empty-state{grid-column:1/-1;text-align:center;padding:3rem 1rem}
+.empty-state h4{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;margin-bottom:8px}
+.empty-state p{font-size:13px;color:#888;margin-bottom:16px}
+.btnrestart{background:var(--ink);color:#fff;border:none;padding:10px 28px;border-radius:2px;font-size:13px;font-weight:600;font-family:'Barlow Condensed',sans-serif;letter-spacing:0.07em;text-transform:uppercase;cursor:pointer}
+
+@media(max-width:540px){.pgrid{grid-template-columns:repeat(2,1fr)}.stitle{font-size:24px}}
+</style>
+</head>
+<body>
+<div class="finder">
+
+  <div class="topbar">
+    <span class="logo"><span class="dot"></span>MARMOT</span>
+    <span class="topbar-sub">/ Encuentra tu chaqueta ideal</span>
+  </div>
+
+  <div class="prog-wrap">
+    <div style="padding:12px 20px 0">
+      <div class="prog-row">
+        <span class="prog-label" id="step-label">Paso 1 de 4</span>
+        <div class="prog-dots" id="prog">
+          <div class="pd on" data-s="1"></div><div class="pd" data-s="2"></div>
+          <div class="pd" data-s="3"></div><div class="pd" data-s="4"></div>
+        </div>
+      </div>
+    </div>
+    <div class="breadcrumb" id="bc"></div>
+  </div>
+
+  <!-- STEP 1: Genero -->
+  <div class="step active" id="s1">
+    <div class="shead">
+      <h2 class="stitle">¿Para quién es?</h2>
+      <p class="ssub">Nuestras chaquetas están diseñadas con calces y patrones específicos para hombre y mujer.</p>
+    </div>
+    <div class="og" style="grid-template-columns:repeat(2,1fr)">
+      <div class="oc" data-val="hombre" onclick="p1(this)">
+        <svg class="oic" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+        <span class="ol">Hombre</span>
+      </div>
+      <div class="oc" data-val="mujer" onclick="p1(this)">
+        <svg class="oic" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/><path d="M12 17v4M10 19h4" opacity=".6"/></svg>
+        <span class="ol">Mujer</span>
+      </div>
+    </div>
+    <div class="cbar"><b id="c1">--</b> modelos disponibles</div>
+  </div>
+
+  <!-- STEP 2: Condiciones -->
+  <div class="step" id="s2">
+    <div class="navrow"><button class="btnback" onclick="bk()">&#8592; Paso anterior</button></div>
+    <div class="shead">
+      <h2 class="stitle">¿De qué te tiene que proteger?</h2>
+      <p class="ssub">Elige la condición principal para la que buscas la chaqueta.</p>
+    </div>
+    <div class="og" id="cg" style="grid-template-columns:repeat(2,1fr)"></div>
+    <div class="cbar"><b id="c2">--</b> modelos disponibles</div>
+  </div>
+
+  <!-- STEP 3: Tipo -->
+  <div class="step" id="s3">
+    <div class="navrow"><button class="btnback" onclick="bk()">&#8592; Paso anterior</button></div>
+    <div class="shead">
+      <h2 class="stitle">¿Qué tipo de chaqueta?</h2>
+      <p class="ssub">Cada construcción rinde distinto. Si no tienes preferencia, salta este paso.</p>
+    </div>
+    <div class="og" id="tg"></div>
+    <div class="skip-wrap"><button class="skip-link" onclick="skipTipo()">Saltar este paso &#8594;</button></div>
+    <div class="cbar"><b id="c3">--</b> modelos disponibles</div>
+  </div>
+
+  <!-- STEP 4: Funcionalidades -->
+  <div class="step" id="s4">
+    <div class="navrow"><button class="btnback" onclick="bk()">&#8592; Paso anterior</button></div>
+    <div class="shead">
+      <h2 class="stitle">¿Qué funcionalidades priorizas?</h2>
+      <p class="ssub">Elige hasta cuatro características clave para tu chaqueta.</p>
+    </div>
+    <div class="feat-meta">
+      <span class="feat-hint" id="fh">0 de 4 seleccionadas</span>
+      <span class="feat-max" id="fmax">Máximo alcanzado</span>
+    </div>
+    <div class="og" id="fg" style="grid-template-columns:repeat(4,1fr)"></div>
+    <div class="skip-wrap"><button class="skip-link" onclick="skipFeats()">Saltar este paso &#8594;</button></div>
+    <div class="feat-cta" id="fc" style="display:none">
+      <button class="btnver" onclick="showPLP()">Ver resultados &#8594;</button>
+    </div>
+    <div class="cbar"><b id="c4">--</b> modelos disponibles</div>
+  </div>
+
+  <!-- STEP 5: PLP -->
+  <div class="step" id="s5">
+    <div class="navrow" style="justify-content:space-between">
+      <button class="btnback" onclick="bk()">&#8592; Paso anterior</button>
+      <button class="plp-restart" onclick="restart()">Comenzar de nuevo</button>
+    </div>
+    <div class="plp-wrap">
+      <div class="plp-top">
+        <div>
+          <h2 class="plp-title" id="pt">--</h2>
+          <p class="plp-range" id="prange">Tu selección personalizada.</p>
+        </div>
+      </div>
+      <div class="pill-row">
+        <button class="pill" id="pill-asc" onclick="sortBy('asc')">Menor precio</button>
+        <button class="pill" id="pill-desc" onclick="sortBy('desc')">Mayor precio</button>
+        <button class="pill sort-pill active" id="pill-def" onclick="sortBy('def')">Relevancia</button>
+      </div>
+      <div class="pgrid" id="pgrid"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const PRODUCTS = [{"id":"BWM15901","name":"Chaqueta Hombre Ares Vest","price":89990,"pfull":179990,"disc":"50%","img":"https://www.marmot.cl/media/catalog/product/b/w/bwm15901_ma41977_1_1.jpg","url":"https://www.marmot.cl/chaqueta-hombre-ares-vest-bwm15901-ma41977","g":["hombre"],"tipo":"pluma","a":["trekking"],"c":["lluvia","viento","frio"],"f":["impermeable","cortaviento","pluma"],"ncolors":1},{"id":"BWM16229","name":"Chaqueta Hombre Guides Down","price":269990,"pfull":null,"disc":null,"img":"https://www.marmot.cl/media/catalog/product/b/w/bwm16229_ma001_1_1.jpg","url":"https://www.marmot.cl/chaqueta-hombre-guides-down-bwm16229-ma001","g":["hombre"],"tipo":"pluma","a":["trekking"],"c":["lluvia","viento","frio"],"f":["impermeable","cortaviento","pluma","capucha"],"ncolors":2},{"id":"BWM15900","name":"Chaqueta Hombre Marmot Ares Jacket","price":109990,"pfull":219990,"disc":"50%","img":"https://www.marmot.cl/media/catalog/product/b/w/bwm15900_ma42035_1_2.jpg","url":"https://www.marmot.cl/chaqueta-hombre-marmot-ares-jacket-bwm15900-ma42035","g":["hombre"],"tipo":"pluma","a":["trekking"],"c":["frio"],"f":["pluma"],"ncolors":2},{"id":"BWM15909","name":"Chaqueta Hombre Marmot Echo Featherless Hoody","price":99990,"pfull":199990,"disc":"50%","img":"https://www.marmot.cl/media/catalog/product/b/w/bwm15909_ma001_1_2.jpg","url":"https://www.marmot.cl/chaqueta-hombre-marmot-echo-featherless-hoody-bwm15909-ma001","g":["hombre"],"tipo":"sintetica","a":["trekking"],"c":["frio"],"f":["pluma","sintetica","capucha"],"ncolors":1},{"id":"BWM15910","name":"Chaqueta Hombre Marmot Echo Featherless Jacket","price":199990,"pfull":null,"disc":null,"img":"https://www.marmot.cl/media/catalog/product/b/w/bwm15910_ma001_1_1.jpg","url":"https://www.marmot.cl/chaqueta-hombre-marmot-echo-featherless-jacket-bwm15910-ma001","g":["hombre"],"tipo":"sintetica","a":["trekking"],"c":["frio"],"f":["pluma","sintetica"],"ncolors":1},{"id":"BWM15734","name":"Chaqueta Hombre Marmot Glades Jacket","price":144990,"pfull":289990,"disc":"50%","img":"https://www.marmot.cl/media/catalog/product/b/w/bwm15734_ma24366_1_2.jpg","url":"https://www.marmot.cl/chaqueta-hombre-marmot-glades-jacket-bwm15734-ma24366","g":["hombre"],"tipo":"nieve","a":["montana","trekking","nieve"],"c":["lluvia","entretiempo"],"f":["impermeable","transpirable","capucha"],"ncolors":1},{"id":"BWM15886","name":"Chaqueta Hombre Marmot Guides Down Hoody","price":134990,"pfull":269990,"disc":"50%","img":"https://www.marmot.cl/media/catalog/product/b/w/bwm15886_ma001_1_1.jpg","url":"https://www.marmot.cl/chaqueta-hombre-marmot-guides-down-hoody-bwm15886-ma001","g":["hombre"],"tipo":"pluma","a":["trekking"],"c":["frio"],"f":["pluma","capucha"],"ncolors":1},{"id":"BWM15881","name":"Chaqueta Hombre Marmot Precip Eco Jacket","price":95990,"pfull":119990,"disc":"20%","img":"https://www.marmot.cl/media/catalog/product/b/w/bwm15881_ma001_5_1.jpg","url":"https://www.marmot.cl/chaqueta-hombre-marmot-precip-eco-jacket-bwm15881-ma001","g":["hombre"],"tipo":"impermeable","a":["trekking"],"c":["lluvia","entretiempo"],"f":["impermeable","transpirable","packable","capucha"],"ncolors":2},{"id":"BWM15974","name":"Chaqueta Hombre Marmot Ramble Comp Jacket","price":199990,"pfull":299990,"disc":"33%","img":"https://www.marmot.cl/media/catalog/product/b/w/bwm15974_ma24377_1_1.jpg","url":"https://www.marmot.cl/chaqueta-hombre-marmot-ramble-comp-jacket-bwm15974-ma24377","g":["hombre"],"tipo":"componente","a":["trekking"],"c":["lluvia","entretiempo"],"f":["impermeable","termica","transpirable","capucha"],"ncolors":3},{"id":"BWM15914","name":"Chaqueta Hombre Marmot Ridgefield Sherpa Shirt Jacket","price":63990,"pfull":159990,"disc":"60%","img":"https://www.marmot.cl/media/catalog/product/b/w/bwm15914_ma23095_1_2.jpg","url":"https://www.marmot.cl/chaqueta-hombre-marmot-ridgefield-sherpa-shirt-jacket-bwm15914-ma23095","g":["hombre"],"tipo":"casual","a":["urbano"],"c":["entretiempo"],"f":[],"ncolors":3},{"id":"BWM15887","name":"Chaqueta Hombre Marmot Stockholm Jacket","price":179990,"pfull":359990,"disc":"50%","img":"https://www.marmot.cl/media/catalog/product/b/w/bwm15887_ma001_1_1.jpg","url":"https://www.marmot.cl/chaqueta-hombre-marmot-stockholm-jacket-bwm15887-ma001","g":["hombre"],"tipo":"pluma","a":["trekking"],"c":["frio"],"f":["pluma","capucha"],"ncolors":2},{"id":"BWM15379","name":"Chaqueta Hombre Marmot Superalloy Wind Jacket","price":99990,"pfull":null,"disc":null,"img":"https://www.marmot.cl/media/catalog/product/b/w/bwm15379_ma001_1_1.jpg","url":"https://www.marmot.cl/chaqueta-hombre-marmot-superalloy-wind-jacket-bwm15379-ma001","g":["hombre"],"tipo":"cortaviento","a":["urbano"],"c":["viento","entretiempo"],"f":["cortaviento","packable","capucha"],"ncolors":2},{"id":"BWM16076","name":"Chaqueta Hombre Marmot Tempo Jacket","price":49990,"pfull":99990,"disc":"50%","img":"https://www.marmot.cl/media/catalog/product/b/w/bwm16076_ma001_1_1.jpg","url":"https://www.marmot.cl/chaqueta-hombre-marmot-tempo-jacket-bwm16076-ma001","g":["hombre"],"tipo":"softshell","a":["trekking"],"c":["entretiempo"],"f":["transpirable"],"ncolors":1},{"id":"BW73710","name":"Chaqueta Hombre Marmot Tullus","price":71990,"pfull":179990,"disc":"60%","img":"https://www.marmot.cl/media/catalog/product/b/w/bw73710_ma1101_1.jpg","url":"https://www.marmot.cl/chaqueta-hombre-marmot-tullus-bw73710-ma1101","g":["hombre"],"tipo":"pluma","a":["trekking"],"c":["frio"],"f":["pluma"],"ncolors":1},{"id":"BW79970","name":"Chaqueta Hombre Marmot Warmcube 8000M Suit","price":1600000,"pfull":null,"disc":null,"img":"https://www.marmot.cl/media/catalog/product/b/w/bw79970_ma3126_1_1.jpg","url":"https://www.marmot.cl/chaqueta-hombre-marmot-warmcube-8000m-suit-bw79970-ma3126","g":["hombre"],"tipo":"pluma","a":["montana","nieve"],"c":["viento","frio"],"f":["cortaviento","pluma","capucha"],"ncolors":1},{"id":"BW74420","name":"Chaqueta Hombre Marmot Warmcube West Rib Parka","price":599990,"pfull":null,"disc":null,"img":"https://www.marmot.cl/media/catalog/product/b/w/bw74420_ma2210_1_1.jpg","url":"https://www.marmot.cl/chaqueta-hombre-marmot-warmcube-west-rib-parka-bw74420-ma2210","g":["hombre"],"tipo":"pluma","a":["montana","nieve"],"c":["viento","frio"],"f":["cortaviento","pluma","sintetica","packable","capucha"],"ncolors":1},{"id":"BWM15780","name":"Chaqueta Hombre Marmot Waypoint Gtx Jacket","price":185990,"pfull":309990,"disc":"40%","img":"https://www.marmot.cl/media/catalog/product/b/w/bwm15780_ma24366_1_1.jpg","url":"https://www.marmot.cl/chaqueta-hombre-marmot-waypoint-gtx-jacket-bwm15780-ma24366","g":["hombre"],"tipo":"impermeable","a":["trekking"],"c":["lluvia","entretiempo"],"f":["impermeable","transpirable","capucha"],"ncolors":1},{"id":"BWM16134","name":"Chaqueta Hombre Marmot Zeus Jacket","price":132990,"pfull":189990,"disc":"30%","img":"https://www.marmot.cl/media/catalog/product/b/w/bwm16134_ma001_1_2.jpg","url":"https://www.marmot.cl/chaqueta-hombre-marmot-zeus-jacket-bwm16134-ma001","g":["hombre"],"tipo":"pluma","a":["trekking"],"c":["frio"],"f":["pluma","transpirable"],"ncolors":3},{"id":"BWM16237","name":"Chaqueta Hombre Monoquilt Hoody","price":104990,"pfull":209990,"disc":"50%","img":"https://www.marmot.cl/media/catalog/product/b/w/bwm16237_ma41907_1_2.jpg","url":"https://www.marmot.cl/chaqueta-hombre-monoquilt-hoody-bwm16237-ma41907","g":["hombre"],"tipo":"sintetica","a":["trekking"],"c":["lluvia","viento","frio"],"f":["impermeable","cortaviento","sintetica","capucha"],"ncolors":2},{"id":"BWM16227","name":"Chaqueta Hombre Onward Insulated","price":129990,"pfull":null,"disc":null,"img":"https://www.marmot.cl/media/catalog/product/b/w/bwm16227_ma001_1_1.jpg","url":"https://www.marmot.cl/chaqueta-hombre-onward-insulated-bwm16227-ma001","g":["hombre"],"tipo":"sintetica","a":["trekking"],"c":["lluvia","frio"],"f":["impermeable","sintetica","capucha"],"ncolors":1},{"id":"BWM16738","name":"Chaqueta Hombre Precip Evo Flex","price":129990,"pfull":null,"disc":null,"img":"https://www.marmot.cl/media/catalog/product/b/w/bwm16738_ma001_1_1.jpg","url":"https://www.marmot.cl/chaqueta-hombre-precip-evo-flex-bwm16738-ma001","g":["hombre"],"tipo":"impermeable","a":["trekking"],"c":["lluvia","viento","entretiempo"],"f":["impermeable","cortaviento","packable","capucha"],"ncolors":2},{"id":"BWC10001","name":"Chaqueta Hombre Tahoe Down","price":127990,"pfull":159990,"disc":"20%","img":"https://www.marmot.cl/media/catalog/product/b/w/bwc10001_ma001_1_2.jpg","url":"https://www.marmot.cl/chaqueta-hombre-tahoe-down-bwc10001-ma001","g":["hombre"],"tipo":"pluma","a":["trekking"],"c":["frio"],"f":["pluma","packable"],"ncolors":4},{"id":"BWM16244","name":"Chaqueta Hombre Warmcube Active Aerothermal","price":119990,"pfull":199990,"disc":"40%","img":"https://www.marmot.cl/media/catalog/product/b/w/bwm16244_ma24377_1_1.jpg","url":"https://www.marmot.cl/chaqueta-hombre-warmcube-active-aerothermal-bwm16244-ma24377","g":["hombre"],"tipo":"pluma","a":["montana","trekking","nieve"],"c":["lluvia","viento","frio"],"f":["impermeable","cortaviento","pluma","sintetica","transpirable","capucha"],"ncolors":2},{"id":"BWM15384","name":"Chaqueta Impermeable Hombre Cascade","price":99990,"pfull":null,"disc":null,"img":"https://www.marmot.cl/media/catalog/product/b/w/bwm15384_ma001_1_1.jpg","url":"https://www.marmot.cl/chaqueta-impermeable-hombre-cascade-bwm15384-ma001","g":["hombre"],"tipo":"impermeable","a":["trekking"],"c":["lluvia","viento","entretiempo"],"f":["impermeable","cortaviento","transpirable","capucha"],"ncolors":2},{"id":"BW41500","name":"Chaqueta Impermeable Hombre Marmot Precip Eco","price":59990,"pfull":119990,"disc":"50%","img":"https://www.marmot.cl/media/catalog/product/b/w/bw41500_ma001_1_1.jpg","url":"https://www.marmot.cl/chaqueta-impermeable-hombre-marmot-precip-eco-bw41500-ma001","g":["hombre"],"tipo":"impermeable","a":["trekking"],"c":["lluvia","viento","entretiempo"],"f":["impermeable","cortaviento","transpirable","packable","capucha"],"ncolors":1},{"id":"BWM15378","name":"Chaqueta Impermeable Hombre Superalloy","price":169990,"pfull":null,"disc":null,"img":"https://www.marmot.cl/media/catalog/product/b/w/bwm15378_ma9011_1_1.jpg","url":"https://www.marmot.cl/chaqueta-impermeable-hombre-superalloy-bwm15378-ma9011","g":["hombre"],"tipo":"impermeable","a":["trekking"],"c":["lluvia","viento","entretiempo"],"f":["impermeable","cortaviento","transpirable","packable","capucha"],"ncolors":2},{"id":"BWM15385","name":"Polar Hombre Marmot Pinnacle Driclime Hoody","price":84990,"pfull":169990,"disc":"50%","img":"https://www.marmot.cl/media/catalog/product/b/w/bwm15385_ma001_1_1.jpg","url":"https://www.marmot.cl/polar-hombre-marmot-pinnacle-driclime-hoody-bwm15385-ma001","g":["hombre"],"tipo":"impermeable","a":["trekking"],"c":["lluvia","entretiempo"],"f":["impermeable","termica","transpirable","capucha"],"ncolors":2},{"id":"BWM15394","name":"Chaqueta Impermeable Mujer Cascade","price":99990,"pfull":null,"disc":null,"img":"https://www.marmot.cl/media/catalog/product/b/w/bwm15394_ma001_1_1.jpg","url":"https://www.marmot.cl/chaqueta-impermeable-mujer-cascade-bwm15394-ma001","g":["mujer"],"tipo":"impermeable","a":["trekking"],"c":["lluvia","viento","entretiempo"],"f":["impermeable","cortaviento","transpirable","capucha"],"ncolors":1},{"id":"BWM16256","name":"Chaqueta Mujer Guides Down","price":269990,"pfull":null,"disc":null,"img":"https://www.marmot.cl/media/catalog/product/b/w/bwm16256_ma001_1_1.jpg","url":"https://www.marmot.cl/chaqueta-mujer-guides-down-bwm16256-ma001","g":["mujer"],"tipo":"pluma","a":["trekking"],"c":["lluvia","viento","frio"],"f":["impermeable","cortaviento","pluma","capucha"],"ncolors":2},{"id":"BW78370","name":"Chaqueta Mujer Marmot Aruna","price":71990,"pfull":179990,"disc":"60%","img":"https://www.marmot.cl/media/catalog/product/b/w/bw78370_ma9011_1.jpg","url":"https://www.marmot.cl/chaqueta-mujer-marmot-aruna-bw78370-ma9011","g":["mujer"],"tipo":"pluma","a":["trekking"],"c":["frio"],"f":["pluma"],"ncolors":1},{"id":"BWM15744","name":"Chaqueta Mujer Marmot W Ares Jacket","price":109990,"pfull":219990,"disc":"50%","img":"https://www.marmot.cl/media/catalog/product/b/w/bwm15744_ma42039_1_1.jpg","url":"https://www.marmot.cl/chaqueta-mujer-marmot-w-ares-jacket-bwm15744-ma42039","g":["mujer"],"tipo":"pluma","a":["trekking"],"c":["frio"],"f":["pluma","transpirable"],"ncolors":3},{"id":"BWM15870","name":"Chaqueta Mujer Marmot W Echo Featherless Jacket","price":199990,"pfull":null,"disc":null,"img":"https://www.marmot.cl/media/catalog/product/b/w/bwm15870_ma001_1_1.jpg","url":"https://www.marmot.cl/chaqueta-mujer-marmot-w-echo-featherless-jacket-bwm15870-ma001","g":["mujer"],"tipo":"sintetica","a":["trekking"],"c":["frio"],"f":["pluma","sintetica","capucha"],"ncolors":1},{"id":"BWM15847","name":"Chaqueta Mujer Marmot W Guides Down Hoody","price":134990,"pfull":269990,"disc":"50%","img":"https://www.marmot.cl/media/catalog/product/b/w/bwm15847_ma23923_1_1.jpg","url":"https://www.marmot.cl/chaqueta-mujer-marmot-w-guides-down-hoody-bwm15847-ma23923","g":["mujer"],"tipo":"pluma","a":["trekking"],"c":["frio"],"f":["pluma","capucha"],"ncolors":1},{"id":"BWM15849","name":"Chaqueta Mujer Marmot W Hype Down Hoody","price":149990,"pfull":299990,"disc":"50%","img":"https://www.marmot.cl/media/catalog/product/b/w/bwm15849_ma001_1_2.jpg","url":"https://www.marmot.cl/chaqueta-mujer-marmot-w-hype-down-hoody-bwm15849-ma001","g":["mujer"],"tipo":"pluma","a":["trekking"],"c":["viento","frio"],"f":["cortaviento","pluma","capucha"],"ncolors":1},{"id":"BWM15842","name":"Chaqueta Mujer Marmot W Ithaca Jacket","price":139990,"pfull":279990,"disc":"50%","img":"https://www.marmot.cl/media/catalog/product/b/w/bwm15842_ma001_1_1.jpg","url":"https://www.marmot.cl/chaqueta-mujer-marmot-w-ithaca-jacket-bwm15842-ma001","g":["mujer"],"tipo":"pluma","a":["trekking"],"c":["frio"],"f":["pluma","sintetica","capucha"],"ncolors":1},{"id":"BWM16133","name":"Chaqueta Mujer Marmot W Jena Jacket","price":132990,"pfull":189990,"disc":"30%","img":"https://www.marmot.cl/media/catalog/product/b/w/bwm16133_ma001_1_1.jpg","url":"https://www.marmot.cl/chaqueta-mujer-marmot-w-jena-jacket-bwm16133-ma001","g":["mujer"],"tipo":"pluma","a":["trekking"],"c":["frio"],"f":["pluma","transpirable"],"ncolors":2},{"id":"BWM15838","name":"Chaqueta Mujer Marmot W Montreal","price":164990,"pfull":329990,"disc":"50%","img":"https://www.marmot.cl/media/catalog/product/b/w/bwm15838_ma001_1_2.jpg","url":"https://www.marmot.cl/chaqueta-mujer-marmot-w-montreal-bwm15838-ma001","g":["mujer"],"tipo":"pluma","a":["trekking"],"c":["frio"],"f":["pluma","sintetica","capucha"],"ncolors":1},{"id":"BWM15866","name":"Chaqueta Mujer Marmot W Precip Eco Jacket","price":95990,"pfull":119990,"disc":"20%","img":"https://www.marmot.cl/media/catalog/product/b/w/bwm15866_ma001_1_1.jpg","url":"https://www.marmot.cl/chaqueta-mujer-marmot-w-precip-eco-jacket-bwm15866-ma001","g":["mujer"],"tipo":"impermeable","a":["trekking"],"c":["lluvia","entretiempo"],"f":["impermeable","transpirable","packable","capucha"],"ncolors":2},{"id":"BWM15975","name":"Chaqueta Mujer Marmot W Ramble Component Jacket","price":149990,"pfull":299990,"disc":"50%","img":"https://www.marmot.cl/media/catalog/product/b/w/bwm15975_ma23091_1_1.jpg","url":"https://www.marmot.cl/chaqueta-mujer-marmot-w-ramble-component-jacket-bwm15975-ma23091","g":["mujer"],"tipo":"componente","a":["trekking"],"c":["lluvia","entretiempo"],"f":["impermeable","termica","transpirable","capucha"],"ncolors":1},{"id":"BWM16072","name":"Chaqueta Mujer Marmot W Seeker Gtx","price":399990,"pfull":null,"disc":null,"img":"https://www.marmot.cl/media/catalog/product/b/w/bwm16072_ma24400_1_3.jpg","url":"https://www.marmot.cl/chaqueta-mujer-marmot-w-seeker-gtx-bwm16072-ma24400","g":["mujer"],"tipo":"impermeable","a":["montana","trekking"],"c":["lluvia","viento","entretiempo"],"f":["impermeable","cortaviento","transpirable","capucha"],"ncolors":1},{"id":"BWM15389","name":"Chaqueta Mujer Marmot W Superalloy Wind Jacket","price":99990,"pfull":null,"disc":null,"img":"https://www.marmot.cl/media/catalog/product/b/w/bwm15389_ma24370_1_2.jpg","url":"https://www.marmot.cl/chaqueta-mujer-marmot-w-superalloy-wind-jacket-bwm15389-ma24370","g":["mujer"],"tipo":"cortaviento","a":["urbano"],"c":["viento","entretiempo"],"f":["cortaviento","packable","capucha"],"ncolors":1},{"id":"BWM16079","name":"Chaqueta Mujer Marmot W Tempo Jacket","price":49990,"pfull":99990,"disc":"50%","img":"https://www.marmot.cl/media/catalog/product/b/w/bwm16079_ma001_1.jpg","url":"https://www.marmot.cl/chaqueta-mujer-marmot-w-tempo-jacket-bwm16079-ma001","g":["mujer"],"tipo":"sintetica","a":["trekking"],"c":["frio"],"f":["sintetica","transpirable"],"ncolors":1},{"id":"BWM16262","name":"Chaqueta Mujer Minimalist Pertex 3-In-1","price":263990,"pfull":329990,"disc":"20%","img":"https://www.marmot.cl/media/catalog/product/b/w/bwm16262_ma001_1_1.jpg","url":"https://www.marmot.cl/chaqueta-mujer-minimalist-pertex-3-in-1-bwm16262-ma001","g":["mujer"],"tipo":"componente","a":["trekking"],"c":["lluvia","viento","entretiempo"],"f":["impermeable","cortaviento","termica","transpirable"],"ncolors":1},{"id":"BWM16263","name":"Chaqueta Mujer Monoquilt Hoody","price":104990,"pfull":209990,"disc":"50%","img":"https://www.marmot.cl/media/catalog/product/b/w/bwm16263_ma41905_1_1.jpg","url":"https://www.marmot.cl/chaqueta-mujer-monoquilt-hoody-bwm16263-ma41905","g":["mujer"],"tipo":"sintetica","a":["trekking"],"c":["lluvia","viento","frio"],"f":["impermeable","cortaviento","sintetica","capucha"],"ncolors":2},{"id":"BWM16254","name":"Chaqueta Mujer Onward Insulated","price":129990,"pfull":null,"disc":null,"img":"https://www.marmot.cl/media/catalog/product/b/w/bwm16254_ma24369_1_1.jpg","url":"https://www.marmot.cl/chaqueta-mujer-onward-insulated-bwm16254-ma24369","g":["mujer"],"tipo":"sintetica","a":["trekking"],"c":["lluvia","viento","frio"],"f":["impermeable","cortaviento","sintetica","capucha"],"ncolors":1},{"id":"BWM16756","name":"Chaqueta Mujer Precip Evo Flex","price":129990,"pfull":null,"disc":null,"img":"https://www.marmot.cl/media/catalog/product/b/w/bwm16756_ma001_1_1.jpg","url":"https://www.marmot.cl/chaqueta-mujer-precip-evo-flex-bwm16756-ma001","g":["mujer"],"tipo":"impermeable","a":["trekking"],"c":["lluvia","viento","entretiempo"],"f":["impermeable","cortaviento","transpirable","packable","capucha"],"ncolors":3},{"id":"BWC10002","name":"Chaqueta Mujer Tahoe Down","price":127990,"pfull":159990,"disc":"20%","img":"https://www.marmot.cl/media/catalog/product/b/w/bwc10002_ma001_1.jpg","url":"https://www.marmot.cl/chaqueta-mujer-tahoe-down-bwc10002-ma001","g":["mujer"],"tipo":"pluma","a":["trekking"],"c":["frio"],"f":["pluma","packable"],"ncolors":4}];
+
+const ST = {g:null,c:null,tipo:null,feat:[],step:1,sort:'def'};
+
+const COND = [
+  {id:'lluvia',     l:'Lluvia',        s:'Impermeable',       svg:'<path d="M12 2C8 8 5 12 5 16a7 7 0 0014 0c0-4-3-8-7-14z"/>'},
+  {id:'frio',       l:'Frío intenso',  s:'Aislación y abrigo', svg:'<path d="M12 2v20M4 6l16 12M20 6L4 18M2 12h20"/>'},
+  {id:'viento',     l:'Viento',        s:'Cortaviento',       svg:'<path d="M3 8h11a3 3 0 100-6M3 16h14a3 3 0 110 6M3 12h18"/>'},
+  {id:'entretiempo',l:'Entretiempo',   s:'Capas ligeras',     svg:'<path d="M17 18a5 5 0 000-10 6 6 0 00-11 2 4 4 0 00-1 8z"/><path d="M12 2v2" opacity=".6"/>'},
+];
+
+const GEN_LABEL={hombre:'Hombre',mujer:'Mujer'};
+const COND_LABEL={lluvia:'Lluvia',frio:'Frío intenso',viento:'Viento',entretiempo:'Entretiempo'};
+const TIPO_LABEL={pluma:'Pluma',impermeable:'Impermeable',sintetica:'Sintética',cortaviento:'Cortaviento',softshell:'Softshell',casual:'Casual',nieve:'Nieve',componente:'3-en-1 / Capa',otro:'Otra'};
+const TIPO_SUB={pluma:'Relleno natural',impermeable:'Shell sin relleno',sintetica:'Relleno sintético',cortaviento:'Ligera cortaviento',softshell:'Elástica y transpirable',casual:'Uso diario',nieve:'Nieve y montaña',componente:'Sistema por capas',otro:''};
+
+const FEATS = [
+  {id:'impermeable', l:'Impermeable',   svg:'<path d="M12 2C8 8 5 12 5 16a7 7 0 0014 0c0-4-3-8-7-14z"/>'},
+  {id:'cortaviento', l:'Cortaviento',   svg:'<path d="M3 8h11a3 3 0 100-6M3 16h14a3 3 0 110 6M3 12h18"/>'},
+  {id:'pluma',       l:'Aislación pluma', svg:'<path d="M20 4C10 6 6 12 5 20M5 20l6-2M5 20l2-6M9 15c3-1 6-4 8-9"/>'},
+  {id:'sintetica',   l:'Aislación sintética', svg:'<rect x="3" y="8" width="18" height="8" rx="4"/><path d="M7 8V6m5 2V5m5 3V6"/>'},
+  {id:'termica',     l:'Térmica / fleece', svg:'<path d="M12 2v20M4 6l16 12M20 6L4 18"/>'},
+  {id:'transpirable',l:'Transpirable',  svg:'<path d="M5 12h14M5 8h14M5 16h14" stroke-linecap="round"/>'},
+  {id:'packable',    l:'Packable',      svg:'<path d="M4 7l8-4 8 4v10l-8 4-8-4z"/><path d="M4 7l8 4 8-4M12 11v10"/>'},
+  {id:'capucha',     l:'Con capucha',   svg:'<path d="M12 3c-5 0-8 4-8 9 0 3 2 6 8 9 6-3 8-6 8-9 0-5-3-9-8-9z"/><path d="M9 12a3 3 0 006 0"/>'},
+];
+const FEAT_LABEL={impermeable:'Impermeable',cortaviento:'Cortaviento',pluma:'Pluma',sintetica:'Sintética',termica:'Térmica',transpirable:'Transpirable',packable:'Packable',capucha:'Capucha'};
+
+function fil(){
+  let r = PRODUCTS.filter(p=>{
+    if(ST.g && !p.g.includes(ST.g)) return false;
+    if(ST.c && !p.c.includes(ST.c)) return false;
+    if(ST.tipo && p.tipo!==ST.tipo) return false;
+    if(ST.feat.length>0 && !ST.feat.some(f=>p.f.includes(f))) return false;
+    return true;
+  });
+  if(ST.sort==='asc') r.sort((a,b)=>a.price-b.price);
+  else if(ST.sort==='desc') r.sort((a,b)=>b.price-a.price);
+  return r;
+}
+function countWith(over){
+  const s=Object.assign({},ST,over);
+  return PRODUCTS.filter(p=>{
+    if(s.g && !p.g.includes(s.g)) return false;
+    if(s.c && !p.c.includes(s.c)) return false;
+    if(s.tipo && p.tipo!==s.tipo) return false;
+    if(s.feat && s.feat.length>0 && !s.feat.some(f=>p.f.includes(f))) return false;
+    return true;
+  }).length;
+}
+function updC(){const n=fil().length;['c1','c2','c3','c4'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=n;});}
+
+function selCard(el){el.closest('.og').querySelectorAll('.oc').forEach(o=>o.classList.remove('sel'));el.classList.add('sel');}
+
+function p1(el){ST.g=el.dataset.val;ST.c=null;ST.tipo=null;ST.feat=[];selCard(el);buildCond();setTimeout(()=>go(2),280);}
+function p2(id,el){ST.c=id;ST.tipo=null;ST.feat=[];selCard(el);buildTipo();setTimeout(()=>go(3),280);}
+function pickTipo(id,el){ST.tipo=id;ST.feat=[];selCard(el);buildFeats();setTimeout(()=>go(4),280);}
+function skipTipo(){ST.tipo=null;ST.feat=[];buildFeats();go(4);}
+function skipFeats(){ST.feat=[];showPLP();}
+
+function buildCond(){
+  const g=document.getElementById('cg');
+  g.innerHTML=COND.map(o=>{
+    const n=countWith({c:o.id,tipo:null,feat:[]});
+    return `<div class="oc${n===0?' disabled':''}" onclick="${n===0?'':`p2('${o.id}',this)`}">
+      <svg class="oic" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">${o.svg}</svg>
+      <span class="ol">${o.l}</span><span class="os">${o.s}</span>
+      <span class="ocount">${n} modelo${n!==1?'s':''}</span></div>`;
+  }).join('');
+}
+function buildTipo(){
+  const tipos=[...new Set(fil().map(p=>p.tipo))];
+  const order=['pluma','sintetica','impermeable','softshell','cortaviento','nieve','casual','componente','otro'];
+  tipos.sort((a,b)=>order.indexOf(a)-order.indexOf(b));
+  const cols=tipos.length<=2?2:tipos.length<=4?2:3;
+  const g=document.getElementById('tg');g.style.gridTemplateColumns='repeat('+cols+',1fr)';
+  g.innerHTML=tipos.map(t=>{
+    const n=countWith({tipo:t,feat:[]});
+    return `<div class="oc" onclick="pickTipo('${t}',this)">
+      <span class="ol">${TIPO_LABEL[t]||t}</span><span class="os">${TIPO_SUB[t]||''}</span>
+      <span class="ocount">${n} modelo${n!==1?'s':''}</span></div>`;
+  }).join('');
+}
+function buildFeats(){
+  ST.feat=[];
+  const avail=new Set();fil().forEach(p=>p.f.forEach(f=>avail.add(f)));
+  document.getElementById('fc').style.display='none';
+  document.getElementById('fh').textContent='0 de 4 seleccionadas';
+  document.getElementById('fmax').classList.remove('show');
+  document.getElementById('fg').innerHTML=FEATS.map(f=>{
+    const dis=!avail.has(f.id);
+    return `<div class="oc${dis?' disabled':''}" ${dis?'':`onclick="toggleFeat('${f.id}',this)"`} data-fid="${f.id}">
+      <svg class="oic" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">${f.svg}</svg>
+      <span class="ol" style="font-size:13px">${f.l}</span></div>`;
+  }).join('');
+}
+function toggleFeat(v,el){
+  const i=ST.feat.indexOf(v);
+  if(i>=0){ST.feat.splice(i,1);el.classList.remove('sel');}
+  else{if(ST.feat.length>=4){document.getElementById('fmax').classList.add('show');return;}ST.feat.push(v);el.classList.add('sel');}
+  document.getElementById('fmax').classList.toggle('show',ST.feat.length>=4);
+  document.querySelectorAll('#fg .oc:not(.sel):not(.disabled)').forEach(c=>c.classList.toggle('feat-disabled',ST.feat.length>=4));
+  document.getElementById('fh').textContent=ST.feat.length+' de 4 seleccionadas';
+  document.getElementById('fc').style.display=ST.feat.length>0?'block':'none';
+  updC();
+}
+
+function sortBy(s){ST.sort=s;['asc','desc','def'].forEach(k=>document.getElementById('pill-'+k).classList.toggle('active',k===s));renderPLP();}
+function fmtCLP(n){return '$'+n.toLocaleString('es-CL');}
+
+function renderPLP(){
+  const r=fil();
+  document.getElementById('pt').textContent=r.length+' Modelo'+(r.length!==1?'s':'');
+  if(r.length>0){const pr=r.map(p=>p.price),mn=Math.min(...pr),mx=Math.max(...pr);
+    document.getElementById('prange').textContent=mn===mx?'Precio: '+fmtCLP(mn):'Desde '+fmtCLP(mn)+' hasta '+fmtCLP(mx);}
+  const g=document.getElementById('pgrid');
+  if(!r.length){g.innerHTML=`<div class="empty-state"><h4>Sin resultados</h4><p>No encontramos modelos para esta combinación.<br>Ajusta los filtros o empieza de nuevo.</p><button class="btnrestart" onclick="restart()">Comenzar de nuevo</button></div>`;return;}
+  g.innerHTML=r.map(p=>{
+    const match=ST.feat.filter(f=>p.f.includes(f)).map(f=>`<span class="ptag match">${FEAT_LABEL[f]||f}</span>`).join('');
+    const tipoTag=`<span class="ptag tipo">${TIPO_LABEL[p.tipo]||p.tipo}</span>`;
+    const disc=p.disc?`<span class="disc-badge">-${p.disc}</span>`:'';
+    const full=p.pfull?`<span class="pfull">${fmtCLP(p.pfull)}</span>`:'';
+    const colors=p.ncolors>1?`<span class="pcolors">${p.ncolors} colores</span>`:'';
+    return `<div class="pcard">
+      <div class="pimg">${disc}
+        <img src="${p.img}" alt="${p.name}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div class="pimg-fallback"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1"><path d="M12 3c-5 0-8 4-8 9 0 3 2 6 8 9 6-3 8-6 8-9 0-5-3-9-8-9z"/></svg></div>
+      </div>
+      <div class="pbody">
+        <p class="pname">${p.name}</p>
+        <div class="price-row"><span class="pprice">${fmtCLP(p.price)}</span>${full}${colors}</div>
+        <div class="ptags">${tipoTag}${match}</div>
+      </div>
+      <a class="plink" href="${p.url}" target="_blank" rel="noopener">Ver producto &rarr;</a>
+    </div>`;
+  }).join('');
+}
+function showPLP(){renderPLP();go(5);}
+
+function bk(){
+  const p=ST.step-1;if(p<1)return;
+  if(ST.step===4){ST.feat=[];document.getElementById('fc').style.display='none';}
+  if(ST.step===3){ST.tipo=null;}
+  if(ST.step===2){ST.c=null;}
+  if(p===1||p===2){setTimeout(()=>{const v=p===1?ST.g:ST.c;const sid='#s'+p;if(v){const e=document.querySelector(sid+' [data-val="'+v+'"]')||[...document.querySelectorAll(sid+' .oc')].find(x=>x.getAttribute('onclick')&&x.getAttribute('onclick').includes("'"+v+"'"));if(e){document.querySelectorAll(sid+' .oc').forEach(o=>o.classList.remove('sel'));e.classList.add('sel');}}},30);}
+  if(p===4){setTimeout(()=>{document.getElementById('fh').textContent=ST.feat.length+' de 4 seleccionadas';document.getElementById('fc').style.display=ST.feat.length>0?'block':'none';document.querySelectorAll('#fg .oc').forEach(e=>{e.classList.toggle('sel',ST.feat.includes(e.dataset.fid));e.classList.remove('feat-disabled');});},30);}
+  go(p);
+}
+function restart(){ST.g=null;ST.c=null;ST.tipo=null;ST.feat=[];ST.sort='def';ST.step=1;['asc','desc'].forEach(k=>document.getElementById('pill-'+k).classList.remove('active'));document.getElementById('pill-def').classList.add('active');document.querySelectorAll('.oc').forEach(o=>o.classList.remove('sel','feat-disabled'));go(1);}
+
+function updProg(n){
+  document.getElementById('step-label').textContent=n<=4?'Paso '+n+' de 4':'Tu selección';
+  document.querySelectorAll('#prog .pd').forEach(d=>{const ds=+d.dataset.s;d.className='pd'+(ds===n?' on':ds<n?' dn':'');});
+  document.querySelector('.prog-wrap').style.display=n===5?'none':'block';
+}
+function updBC(){
+  const bc=document.getElementById('bc');const parts=[];
+  if(ST.g)parts.push(GEN_LABEL[ST.g]);
+  if(ST.c)parts.push(COND_LABEL[ST.c]);
+  if(ST.tipo)parts.push(TIPO_LABEL[ST.tipo]);
+  else if(ST.step>=3&&ST.c)parts.push('<span style="color:#CCC">Cualquier tipo</span>');
+  if(ST.feat.length>0)parts.push(ST.feat.slice(0,2).map(f=>FEAT_LABEL[f]).join(', ')+(ST.feat.length>2?' +':''));
+  if(!parts.length){bc.innerHTML='';return;}
+  bc.innerHTML=parts.map((p,i)=>'<span class="bc-item'+(i===parts.length-1?' active':'')+'">'+p+'</span>'+(i<parts.length-1?'<span class="bc-sep">\u203A</span>':'')).join('');
+}
+function go(n){document.querySelectorAll('.step').forEach(e=>e.classList.remove('active'));document.getElementById('s'+n).classList.add('active');ST.step=n;updProg(n);updBC();updC();window.scrollTo({top:0,behavior:'smooth'});}
+
+updC();
+</script>
+</body>
+</html>
