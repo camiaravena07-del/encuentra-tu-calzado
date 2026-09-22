@@ -249,6 +249,7 @@ function fil(){
   let r = PRODUCTS.filter(p=>{
     if(ST.g && !p.g.includes(ST.g)) return false;
     if(ST.c && !p.c.includes(ST.c)) return false;
+    if(ST.c==='lluvia' && (p.tipo==='pluma'||p.tipo==='sintetica')) return false; // regla de negocio: en lluvia no mostrar pluma ni sintetica (no toleran mojarse)
     if(ST.tipo && p.tipo!==ST.tipo) return false;
     if(ST.feat.length>0 && !ST.feat.some(f=>p.f.includes(f))) return false;
     return true;
@@ -262,6 +263,7 @@ function countWith(over){
   return PRODUCTS.filter(p=>{
     if(s.g && !p.g.includes(s.g)) return false;
     if(s.c && !p.c.includes(s.c)) return false;
+    if(s.c==='lluvia' && (p.tipo==='pluma'||p.tipo==='sintetica')) return false; // misma regla que en fil()
     if(s.tipo && p.tipo!==s.tipo) return false;
     if(s.feat && s.feat.length>0 && !s.feat.some(f=>p.f.includes(f))) return false;
     return true;
