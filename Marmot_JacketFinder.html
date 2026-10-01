@@ -223,15 +223,13 @@ body{font-family:'Inter',sans-serif;background:var(--bg);min-height:100vh;displa
 
 <script>
 // ============================================================
-// FEED EN VIVO  ·  pega aquí la URL del feed XML de Marmot
-// (misma fuente del export chaquetas.xlsx). Debe ser same-origin
-// con la página (marmot.cl) o servir con CORS habilitado.
+// FEED EN VIVO · pega aquí la URL del feed XML de Marmot
+// (misma fuente del export chaquetas.xlsx). Same-origin con la
+// página (marmot.cl) o con CORS habilitado.
 const FEED_URL = "";   // <-- EJEMPLO: "https://www.marmot.cl/.../feed_chaquetas.xml"
 // ============================================================
-
 let PRODUCTS = [];   // se llena desde el feed en runtime
 
-// ---- Derivación de atributos (corre en el browser sobre el feed) ----
 function _norm(s){return (s||'').toString().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');}
 function _price(v){if(!v)return null;const m=(''+v).replace(/,/g,'').match(/[\d.]+/);return m?Math.round(parseFloat(m[0])):null;}
 function _title(s){return (' '+(s||'').toLowerCase()).replace(/([^a-z])([a-z])/g,(m,a,b)=>a+b.toUpperCase()).trim();}
@@ -264,23 +262,18 @@ function parseFeed(xml){
   const doc=new DOMParser().parseFromString(xml,'text/xml');
   if(doc.getElementsByTagName('parsererror').length)throw new Error('XML inválido');
   const gv=(it,n)=>{const els=it.getElementsByTagName('*');for(let k=0;k<els.length;k++){if(els[k].localName===n)return (els[k].textContent||'').trim();}return '';};
-  const recs={};
-  const items=doc.getElementsByTagName('item');
+  const recs={};const items=doc.getElementsByTagName('item');
   for(let x=0;x<items.length;x++){
     const it=items[x];
-    const pmax=gv(it,'pmax').toUpperCase();
-    if(pmax&&pmax!=='CHAQUETAS')continue;
-    const avail=gv(it,'availability').toLowerCase();
-    if(avail&&!avail.includes('in stock'))continue;
+    const pmax=gv(it,'pmax').toUpperCase();if(pmax&&pmax!=='CHAQUETAS')continue;
+    const avail=gv(it,'availability').toLowerCase();if(avail&&!avail.includes('in stock'))continue;
     const id=gv(it,'id');if(!id)continue;
     const der=_derive({title:gv(it,'title'),description:gv(it,'description'),esp:gv(it,'esp_tecnicas'),pmax2:gv(it,'pmax2')});
-    const pf=_price(gv(it,'price')),sp=_price(gv(it,'sale_price')),eff=sp||pf;
-    const disc=gv(it,'discount');
+    const pf=_price(gv(it,'price')),sp=_price(gv(it,'sale_price')),eff=sp||pf;const disc=gv(it,'discount');
     const base=id.split('_')[0],qty=parseInt(gv(it,'qty'))||0,color=gv(it,'color');
     const entry={id:base,name:_title(gv(it,'title')),price:eff,pfull:(sp&&pf&&pf!==eff)?pf:null,
       disc:(sp&&disc&&disc.toLowerCase()!=='nan')?disc:null,img:gv(it,'image_link'),url:gv(it,'link'),
-      g:[gv(it,'genero').toUpperCase()==='HOMBRE'?'hombre':'mujer'],tipo:der.tipo,a:der.a,c:der.c,f:der.f,
-      _q:qty,_c:new Set(color?[color]:[])};
+      g:[gv(it,'genero').toUpperCase()==='HOMBRE'?'hombre':'mujer'],tipo:der.tipo,a:der.a,c:der.c,f:der.f,_q:qty,_c:new Set(color?[color]:[])};
     if(!recs[base]||qty>recs[base]._q){
       if(recs[base]){recs[base]._c.forEach(z=>entry._c.add(z));['a','c','f'].forEach(k=>entry[k]=[...new Set(recs[base][k].concat(entry[k]))]);}
       recs[base]=entry;
@@ -304,11 +297,175 @@ async function loadFeed(){
     if(!parsed.length)throw new Error('feed sin ítems de chaquetas');
     PRODUCTS=parsed;_reinit();setLoading(false);
     console.info('[finder] feed en vivo: '+parsed.length+' modelos');
-  }catch(err){
-    console.error('[finder] error leyendo feed:',err.message);
-    showError('No se pudo cargar el catálogo en este momento. Reintenta en unos minutos.');
-  }
+  }catch(err){console.error('[finder] error leyendo feed:',err.message);
+    showError('No se pudo cargar el catálogo en este momento. Reintenta en unos minutos.');}
 }
+
+const ST = {g:null,c:null,tipo:null,feat:[],step:1,sort:'def'};
+
+const COND = [
+  {id:'lluvia',     l:'Lluvia',        s:'Impermeable',       svg:'<path d="M12 2C8 8 5 12 5 16a7 7 0 0014 0c0-4-3-8-7-14z"/>'},
+  {id:'frio',       l:'Frío intenso',  s:'Aislación y abrigo', svg:'<path d="M12 2v20M4 6l16 12M20 6L4 18M2 12h20"/>'},
+  {id:'viento',     l:'Viento',        s:'Cortaviento',       svg:'<path d="M3 8h11a3 3 0 100-6M3 16h14a3 3 0 110 6M3 12h18"/>'},
+  {id:'entretiempo',l:'Entretiempo',   s:'Capas ligeras',     svg:'<path d="M17 18a5 5 0 000-10 6 6 0 00-11 2 4 4 0 00-1 8z"/><path d="M12 2v2" opacity=".6"/>'},
+];
+
+const GEN_LABEL={hombre:'Hombre',mujer:'Mujer'};
+const COND_LABEL={lluvia:'Lluvia',frio:'Frío intenso',viento:'Viento',entretiempo:'Entretiempo'};
+const TIPO_LABEL={pluma:'Pluma',impermeable:'Impermeable',sintetica:'Sintética',cortaviento:'Cortaviento',softshell:'Softshell',casual:'Casual',nieve:'Nieve',componente:'3-en-1 / Capa',otro:'Otra'};
+const TIPO_SUB={pluma:'Relleno natural',impermeable:'Shell sin relleno',sintetica:'Relleno sintético',cortaviento:'Ligera cortaviento',softshell:'Elástica y transpirable',casual:'Uso diario',nieve:'Nieve y montaña',componente:'Sistema por capas',otro:''};
+
+const FEATS = [
+  {id:'impermeable', l:'Impermeable',   svg:'<path d="M12 2C8 8 5 12 5 16a7 7 0 0014 0c0-4-3-8-7-14z"/>'},
+  {id:'cortaviento', l:'Cortaviento',   svg:'<path d="M3 8h11a3 3 0 100-6M3 16h14a3 3 0 110 6M3 12h18"/>'},
+  {id:'pluma',       l:'Aislación pluma', svg:'<path d="M20 4C10 6 6 12 5 20M5 20l6-2M5 20l2-6M9 15c3-1 6-4 8-9"/>'},
+  {id:'sintetica',   l:'Aislación sintética', svg:'<rect x="3" y="8" width="18" height="8" rx="4"/><path d="M7 8V6m5 2V5m5 3V6"/>'},
+  {id:'termica',     l:'Térmica / fleece', svg:'<path d="M12 2v20M4 6l16 12M20 6L4 18"/>'},
+  {id:'transpirable',l:'Transpirable',  svg:'<path d="M5 12h14M5 8h14M5 16h14" stroke-linecap="round"/>'},
+  {id:'packable',    l:'Packable',      svg:'<path d="M4 7l8-4 8 4v10l-8 4-8-4z"/><path d="M4 7l8 4 8-4M12 11v10"/>'},
+  {id:'capucha',     l:'Con capucha',   svg:'<path d="M12 3c-5 0-8 4-8 9 0 3 2 6 8 9 6-3 8-6 8-9 0-5-3-9-8-9z"/><path d="M9 12a3 3 0 006 0"/>'},
+];
+const FEAT_LABEL={impermeable:'Impermeable',cortaviento:'Cortaviento',pluma:'Pluma',sintetica:'Sintética',termica:'Térmica',transpirable:'Transpirable',packable:'Packable',capucha:'Capucha'};
+
+function fil(){
+  let r = PRODUCTS.filter(p=>{
+    if(ST.g && !p.g.includes(ST.g)) return false;
+    if(ST.c && !p.c.includes(ST.c)) return false;
+    if(ST.tipo && p.tipo!==ST.tipo) return false;
+    if(ST.feat.length>0 && !ST.feat.some(f=>p.f.includes(f))) return false;
+    return true;
+  });
+  if(ST.sort==='asc') r.sort((a,b)=>a.price-b.price);
+  else if(ST.sort==='desc') r.sort((a,b)=>b.price-a.price);
+  return r;
+}
+function countWith(over){
+  const s=Object.assign({},ST,over);
+  return PRODUCTS.filter(p=>{
+    if(s.g && !p.g.includes(s.g)) return false;
+    if(s.c && !p.c.includes(s.c)) return false;
+    if(s.tipo && p.tipo!==s.tipo) return false;
+    if(s.feat && s.feat.length>0 && !s.feat.some(f=>p.f.includes(f))) return false;
+    return true;
+  }).length;
+}
+function updC(){const n=fil().length;['c1','c2','c3','c4'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=n;});}
+
+function selCard(el){el.closest('.og').querySelectorAll('.oc').forEach(o=>o.classList.remove('sel'));el.classList.add('sel');}
+
+function p1(el){ST.g=el.dataset.val;ST.c=null;ST.tipo=null;ST.feat=[];selCard(el);buildCond();setTimeout(()=>go(2),280);}
+function p2(id,el){ST.c=id;ST.tipo=null;ST.feat=[];selCard(el);buildTipo();setTimeout(()=>go(3),280);}
+function pickTipo(id,el){ST.tipo=id;ST.feat=[];selCard(el);buildFeats();setTimeout(()=>go(4),280);}
+function skipTipo(){ST.tipo=null;ST.feat=[];buildFeats();go(4);}
+function skipFeats(){ST.feat=[];showPLP();}
+
+function buildCond(){
+  const g=document.getElementById('cg');
+  g.innerHTML=COND.map(o=>{
+    const n=countWith({c:o.id,tipo:null,feat:[]});
+    return `<div class="oc${n===0?' disabled':''}" onclick="${n===0?'':`p2('${o.id}',this)`}">
+      <svg class="oic" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">${o.svg}</svg>
+      <span class="ol">${o.l}</span><span class="os">${o.s}</span>
+      <span class="ocount">${n} modelo${n!==1?'s':''}</span></div>`;
+  }).join('');
+}
+function buildTipo(){
+  const tipos=[...new Set(fil().map(p=>p.tipo))];
+  const order=['pluma','sintetica','impermeable','softshell','cortaviento','nieve','casual','componente','otro'];
+  tipos.sort((a,b)=>order.indexOf(a)-order.indexOf(b));
+  const cols=tipos.length<=2?2:tipos.length<=4?2:3;
+  const g=document.getElementById('tg');g.style.gridTemplateColumns='repeat('+cols+',1fr)';
+  g.innerHTML=tipos.map(t=>{
+    const n=countWith({tipo:t,feat:[]});
+    return `<div class="oc" onclick="pickTipo('${t}',this)">
+      <span class="ol">${TIPO_LABEL[t]||t}</span><span class="os">${TIPO_SUB[t]||''}</span>
+      <span class="ocount">${n} modelo${n!==1?'s':''}</span></div>`;
+  }).join('');
+}
+function buildFeats(){
+  ST.feat=[];
+  const avail=new Set();fil().forEach(p=>p.f.forEach(f=>avail.add(f)));
+  document.getElementById('fc').style.display='none';
+  document.getElementById('fh').textContent='0 de 4 seleccionadas';
+  document.getElementById('fmax').classList.remove('show');
+  document.getElementById('fg').innerHTML=FEATS.map(f=>{
+    const dis=!avail.has(f.id);
+    return `<div class="oc${dis?' disabled':''}" ${dis?'':`onclick="toggleFeat('${f.id}',this)"`} data-fid="${f.id}">
+      <svg class="oic" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">${f.svg}</svg>
+      <span class="ol" style="font-size:13px">${f.l}</span></div>`;
+  }).join('');
+}
+function toggleFeat(v,el){
+  const i=ST.feat.indexOf(v);
+  if(i>=0){ST.feat.splice(i,1);el.classList.remove('sel');}
+  else{if(ST.feat.length>=4){document.getElementById('fmax').classList.add('show');return;}ST.feat.push(v);el.classList.add('sel');}
+  document.getElementById('fmax').classList.toggle('show',ST.feat.length>=4);
+  document.querySelectorAll('#fg .oc:not(.sel):not(.disabled)').forEach(c=>c.classList.toggle('feat-disabled',ST.feat.length>=4));
+  document.getElementById('fh').textContent=ST.feat.length+' de 4 seleccionadas';
+  document.getElementById('fc').style.display=ST.feat.length>0?'block':'none';
+  updC();
+}
+
+function sortBy(s){ST.sort=s;['asc','desc','def'].forEach(k=>document.getElementById('pill-'+k).classList.toggle('active',k===s));renderPLP();}
+function fmtCLP(n){return '$'+n.toLocaleString('es-CL');}
+
+function renderPLP(){
+  const r=fil();
+  document.getElementById('pt').textContent=r.length+' Modelo'+(r.length!==1?'s':'');
+  if(r.length>0){const pr=r.map(p=>p.price),mn=Math.min(...pr),mx=Math.max(...pr);
+    document.getElementById('prange').textContent=mn===mx?'Precio: '+fmtCLP(mn):'Desde '+fmtCLP(mn)+' hasta '+fmtCLP(mx);}
+  const g=document.getElementById('pgrid');
+  if(!r.length){g.innerHTML=`<div class="empty-state"><h4>Sin resultados</h4><p>No encontramos modelos para esta combinación.<br>Ajusta los filtros o empieza de nuevo.</p><button class="btnrestart" onclick="restart()">Comenzar de nuevo</button></div>`;return;}
+  g.innerHTML=r.map(p=>{
+    const match=ST.feat.filter(f=>p.f.includes(f)).map(f=>`<span class="ptag match">${FEAT_LABEL[f]||f}</span>`).join('');
+    const tipoTag=`<span class="ptag tipo">${TIPO_LABEL[p.tipo]||p.tipo}</span>`;
+    const disc=p.disc?`<span class="disc-badge">-${p.disc}</span>`:'';
+    const full=p.pfull?`<span class="pfull">${fmtCLP(p.pfull)}</span>`:'';
+    const colors=p.ncolors>1?`<span class="pcolors">${p.ncolors} colores</span>`:'';
+    return `<div class="pcard">
+      <div class="pimg">${disc}
+        <img src="${p.img}" alt="${p.name}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div class="pimg-fallback"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1"><path d="M12 3c-5 0-8 4-8 9 0 3 2 6 8 9 6-3 8-6 8-9 0-5-3-9-8-9z"/></svg></div>
+      </div>
+      <div class="pbody">
+        <p class="pname">${p.name}</p>
+        <div class="price-row"><span class="pprice">${fmtCLP(p.price)}</span>${full}${colors}</div>
+        <div class="ptags">${tipoTag}${match}</div>
+      </div>
+      <a class="plink" href="${p.url}" target="_blank" rel="noopener">Ver producto &rarr;</a>
+    </div>`;
+  }).join('');
+}
+function showPLP(){renderPLP();go(5);}
+
+function bk(){
+  const p=ST.step-1;if(p<1)return;
+  if(ST.step===4){ST.feat=[];document.getElementById('fc').style.display='none';}
+  if(ST.step===3){ST.tipo=null;}
+  if(ST.step===2){ST.c=null;}
+  if(p===1||p===2){setTimeout(()=>{const v=p===1?ST.g:ST.c;const sid='#s'+p;if(v){const e=document.querySelector(sid+' [data-val="'+v+'"]')||[...document.querySelectorAll(sid+' .oc')].find(x=>x.getAttribute('onclick')&&x.getAttribute('onclick').includes("'"+v+"'"));if(e){document.querySelectorAll(sid+' .oc').forEach(o=>o.classList.remove('sel'));e.classList.add('sel');}}},30);}
+  if(p===4){setTimeout(()=>{document.getElementById('fh').textContent=ST.feat.length+' de 4 seleccionadas';document.getElementById('fc').style.display=ST.feat.length>0?'block':'none';document.querySelectorAll('#fg .oc').forEach(e=>{e.classList.toggle('sel',ST.feat.includes(e.dataset.fid));e.classList.remove('feat-disabled');});},30);}
+  go(p);
+}
+function restart(){ST.g=null;ST.c=null;ST.tipo=null;ST.feat=[];ST.sort='def';ST.step=1;['asc','desc'].forEach(k=>document.getElementById('pill-'+k).classList.remove('active'));document.getElementById('pill-def').classList.add('active');document.querySelectorAll('.oc').forEach(o=>o.classList.remove('sel','feat-disabled'));go(1);}
+
+function updProg(n){
+  document.getElementById('step-label').textContent=n<=4?'Paso '+n+' de 4':'Tu selección';
+  document.querySelectorAll('#prog .pd').forEach(d=>{const ds=+d.dataset.s;d.className='pd'+(ds===n?' on':ds<n?' dn':'');});
+  document.querySelector('.prog-wrap').style.display=n===5?'none':'block';
+}
+function updBC(){
+  const bc=document.getElementById('bc');const parts=[];
+  if(ST.g)parts.push(GEN_LABEL[ST.g]);
+  if(ST.c)parts.push(COND_LABEL[ST.c]);
+  if(ST.tipo)parts.push(TIPO_LABEL[ST.tipo]);
+  else if(ST.step>=3&&ST.c)parts.push('<span style="color:#CCC">Cualquier tipo</span>');
+  if(ST.feat.length>0)parts.push(ST.feat.slice(0,2).map(f=>FEAT_LABEL[f]).join(', ')+(ST.feat.length>2?' +':''));
+  if(!parts.length){bc.innerHTML='';return;}
+  bc.innerHTML=parts.map((p,i)=>'<span class="bc-item'+(i===parts.length-1?' active':'')+'">'+p+'</span>'+(i<parts.length-1?'<span class="bc-sep">\u203A</span>':'')).join('');
+}
+function go(n){document.querySelectorAll('.step').forEach(e=>e.classList.remove('active'));document.getElementById('s'+n).classList.add('active');ST.step=n;updProg(n);updBC();updC();window.scrollTo({top:0,behavior:'smooth'});}
+
 updC();
 loadFeed();
 </script>
