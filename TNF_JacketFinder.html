@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>The North Face — Encuentra tu chaqueta</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--accent:#E31837;--accent-dk:#C10E2A;--ink:#0D0D0D;--paper:#fff;--bg:#F4F4F4;--card:#0D0D0D;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Barlow',sans-serif;background:var(--bg);min-height:100vh;display:flex;justify-content:center;padding:2rem 1rem}
+.finder{width:100%;max-width:780px;background:var(--paper)}
+
+.topbar{background:var(--ink);padding:12px 20px;display:flex;align-items:center;gap:10px}
+.logo{color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:16px;letter-spacing:0.1em;display:inline-flex;align-items:center;gap:6px}
+.logo .reg{font-size:0.62em;font-weight:600;transform:translateY(-0.35em);margin-left:1px}
+.logo .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);display:inline-block}
+.topbar-sub{color:rgba(255,255,255,0.45);font-size:12px;letter-spacing:0.04em}
+
+.prog-wrap{padding:18px 20px 0}
+.prog-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.prog-label{font-size:11px;color:#999;letter-spacing:0.06em;text-transform:uppercase}
+.prog-dots{display:flex;gap:5px}
+.pd{width:7px;height:7px;border-radius:50%;background:#DDD;transition:all 0.22s}
+.pd.on{width:24px;border-radius:3px;background:var(--accent)}
+.pd.dn{background:#8fa9c9}
+
+.breadcrumb{min-height:24px;padding:6px 20px 0;display:flex;align-items:center;gap:0;flex-wrap:wrap}
+.bc-item{font-size:11px;color:#999;letter-spacing:0.02em}
+.bc-item.active{color:var(--ink);font-weight:600}
+.bc-sep{font-size:11px;color:#CCC;padding:0 5px}
+
+.step{display:none}
+.step.active{display:block;animation:fi 0.28s ease forwards}
+@keyframes fi{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+.shead{text-align:center;padding:18px 20px 14px}
+.stitle{font-family:'Barlow Condensed',sans-serif;font-size:30px;font-weight:700;color:var(--ink);letter-spacing:0.02em;text-transform:uppercase;line-height:1}
+.ssub{font-size:13px;color:#888;margin:6px auto 0;max-width:480px;line-height:1.55}
+
+.og{display:grid;gap:3px}
+.oc{background:var(--card);min-height:132px;padding:1.6rem 1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:0.6rem;border:2px solid transparent;transition:border-color 0.13s,filter 0.15s;text-align:center;position:relative;overflow:hidden}
+.oc:hover{filter:brightness(1.22)}
+.oc.sel{border-color:var(--accent)}
+.oc.sel::after{content:"\2713";position:absolute;top:8px;right:10px;color:var(--accent);font-size:14px;font-weight:700;font-family:'Barlow Condensed',sans-serif}
+.oc.disabled,.oc.feat-disabled{filter:brightness(0.4);cursor:not-allowed;pointer-events:none}
+.oic{color:#fff;font-size:26px;line-height:1}
+.ol{font-family:'Barlow Condensed',sans-serif;color:#fff;font-size:15px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase}
+.os{color:rgba(255,255,255,0.4);font-size:11px;margin-top:1px}
+.ocount{position:absolute;bottom:8px;left:0;right:0;text-align:center;color:rgba(255,255,255,0.32);font-size:10px;letter-spacing:0.04em}
+
+.skip-wrap{text-align:center;padding:10px 0 4px}
+.skip-link{background:none;border:none;color:#888;font-size:12px;cursor:pointer;font-family:'Barlow',sans-serif;letter-spacing:0.04em;text-decoration:underline;padding:6px 12px}
+.skip-link:hover{color:#333}
+
+.cbar{text-align:center;font-size:12px;color:#999;padding:10px;border-top:1px solid #F0F0F0;letter-spacing:0.04em}
+.cbar b{color:var(--ink);font-size:14px;font-family:'Barlow Condensed',sans-serif}
+
+.navrow{padding:12px 20px 0;display:flex;align-items:center}
+.btnback{background:transparent;border:1px solid #DDD;color:#555;padding:6px 16px;border-radius:20px;cursor:pointer;font-size:12px;font-family:'Barlow',sans-serif;display:inline-flex;align-items:center;gap:6px;transition:border-color 0.13s,color 0.13s}
+.btnback:hover{border-color:var(--accent);color:var(--ink)}
+
+.feat-meta{display:flex;justify-content:space-between;align-items:center;padding:4px 20px 8px}
+.feat-hint{font-size:12px;color:#999;letter-spacing:0.04em}
+.feat-max{font-size:11px;color:var(--accent);font-weight:600;opacity:0;transition:opacity 0.2s}
+.feat-max.show{opacity:1}
+.feat-cta{text-align:center;padding:14px 20px 6px}
+.btnver{background:var(--accent);color:#fff;border:none;padding:12px 40px;border-radius:2px;font-size:15px;font-weight:700;font-family:'Barlow Condensed',sans-serif;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;transition:background 0.15s;width:100%}
+.btnver:hover{background:var(--accent-dk)}
+
+.plp-wrap{padding:16px 20px 0}
+.plp-top{display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:6px}
+.plp-title{font-family:'Barlow Condensed',sans-serif;font-size:24px;font-weight:700;color:var(--ink);letter-spacing:0.04em;text-transform:uppercase}
+.plp-range{font-size:12px;color:#999;margin-top:2px}
+.plp-restart{background:none;border:none;color:#888;font-size:12px;cursor:pointer;font-family:'Barlow',sans-serif;text-decoration:underline}
+.plp-restart:hover{color:var(--ink)}
+.pill-row{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0;border-bottom:1px solid #F0F0F0;padding-bottom:10px}
+.pill{border:1px solid #DDD;background:transparent;color:#666;padding:5px 14px;border-radius:20px;font-size:12px;cursor:pointer;font-family:'Barlow',sans-serif;transition:border-color 0.13s,color 0.13s}
+.pill:hover{border-color:#999;color:var(--ink)}
+.pill.active{border-color:var(--ink);color:var(--ink);background:#EEF3FA}
+.sort-pill{margin-left:auto}
+
+.pgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding-bottom:24px}
+.pcard{background:#fff;border:1px solid #EBEBEB;border-radius:2px;overflow:hidden;transition:border-color 0.13s,box-shadow 0.13s;display:flex;flex-direction:column}
+.pcard:hover{border-color:#CCC;box-shadow:0 2px 12px rgba(0,0,0,0.07)}
+.pimg{width:100%;aspect-ratio:1;background:#F5F5F5;overflow:hidden;position:relative}
+.pimg img{width:100%;height:100%;object-fit:cover;transition:transform 0.25s}
+.pcard:hover .pimg img{transform:scale(1.04)}
+.pimg-fallback{width:100%;height:100%;display:none;align-items:center;justify-content:center;background:linear-gradient(135deg,#1a1a1a,#333)}
+.disc-badge{position:absolute;top:8px;left:8px;background:var(--accent);color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;letter-spacing:0.04em;padding:2px 8px;border-radius:2px}
+.pbody{padding:10px 12px 12px;flex:1;display:flex;flex-direction:column;gap:4px}
+.pname{font-size:12px;font-weight:500;color:var(--ink);line-height:1.35}
+.price-row{display:flex;align-items:baseline;gap:7px;flex-wrap:wrap}
+.pprice{font-family:'Barlow Condensed',sans-serif;font-size:16px;color:var(--ink);letter-spacing:0.02em;font-weight:700}
+.pfull{font-size:12px;color:#AAA;text-decoration:line-through}
+.pcolors{font-size:10px;color:#999;letter-spacing:0.02em}
+.ptags{display:flex;gap:4px;flex-wrap:wrap;margin-top:4px}
+.ptag{background:#F5F5F5;color:#666;font-size:10px;padding:2px 7px;border-radius:2px;letter-spacing:0.02em}
+.ptag.tipo{background:#EEF3FA;color:var(--accent-dk);font-weight:600}
+.ptag.match{background:#E3EEFB;color:var(--accent-dk)}
+.plink{display:block;text-align:center;padding:8px;background:var(--ink);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;text-decoration:none;margin-top:auto;transition:background 0.13s}
+.plink:hover{background:var(--accent)}
+
+.empty-state{grid-column:1/-1;text-align:center;padding:3rem 1rem}
+.empty-state h4{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;margin-bottom:8px}
+.empty-state p{font-size:13px;color:#888;margin-bottom:16px}
+.btnrestart{background:var(--ink);color:#fff;border:none;padding:10px 28px;border-radius:2px;font-size:13px;font-weight:600;font-family:'Barlow Condensed',sans-serif;letter-spacing:0.07em;text-transform:uppercase;cursor:pointer}
+
+@media(max-width:540px){.pgrid{grid-template-columns:repeat(2,1fr)}.stitle{font-size:24px}}
+</style>
+</head>
+<body>
+<div class="finder">
+
+  <div class="topbar">
+    <span class="logo">THE NORTH FACE<span class="reg">®</span></span>
+    <span class="topbar-sub">/ Encuentra tu chaqueta ideal</span>
+  </div>
+
+  <div class="prog-wrap">
+    <div style="padding:12px 20px 0">
+      <div class="prog-row">
+        <span class="prog-label" id="step-label">Paso 1 de 4</span>
+        <div class="prog-dots" id="prog">
+          <div class="pd on" data-s="1"></div><div class="pd" data-s="2"></div>
+          <div class="pd" data-s="3"></div><div class="pd" data-s="4"></div>
+        </div>
+      </div>
+    </div>
+    <div class="breadcrumb" id="bc"></div>
+  </div>
+
+  <!-- STEP 1: Genero -->
+  <div class="step active" id="s1">
+    <div class="shead">
+      <h2 class="stitle">¿Para quién es?</h2>
+      <p class="ssub">Nuestras chaquetas están diseñadas con calces y patrones específicos para hombre, mujer y niños.</p>
+    </div>
+    <div class="og" style="grid-template-columns:repeat(3,1fr)">
+      <div class="oc" data-val="hombre" onclick="p1(this)">
+        <svg class="oic" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+        <span class="ol">Hombre</span>
+      </div>
+      <div class="oc" data-val="mujer" onclick="p1(this)">
+        <svg class="oic" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/><path d="M12 17v4M10 19h4" opacity=".6"/></svg>
+        <span class="ol">Mujer</span>
+      </div>
+      <div class="oc" data-val="nino" onclick="p1(this)">
+        <svg class="oic" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="7" r="3"/><path d="M6 20c0-3.5 2.7-5.5 6-5.5s6 2 6 5.5"/><path d="M9.5 10.5l-1.2 3M14.5 10.5l1.2 3" opacity=".6"/></svg>
+        <span class="ol">Niños</span>
+      </div>
+    </div>
+    <div class="cbar"><b id="c1">--</b> modelos disponibles</div>
+  </div>
+
+  <!-- STEP 2: Condiciones -->
+  <div class="step" id="s2">
+    <div class="navrow"><button class="btnback" onclick="bk()">&#8592; Paso anterior</button></div>
+    <div class="shead">
+      <h2 class="stitle">¿De qué te tiene que proteger?</h2>
+      <p class="ssub">Elige la condición principal para la que buscas la chaqueta.</p>
+    </div>
+    <div class="og" id="cg" style="grid-template-columns:repeat(2,1fr)"></div>
+    <div class="cbar"><b id="c2">--</b> modelos disponibles</div>
+  </div>
+
+  <!-- STEP 3: Tipo -->
+  <div class="step" id="s3">
+    <div class="navrow"><button class="btnback" onclick="bk()">&#8592; Paso anterior</button></div>
+    <div class="shead">
+      <h2 class="stitle">¿Qué tipo de chaqueta?</h2>
+      <p class="ssub">Cada construcción rinde distinto. Si no tienes preferencia, salta este paso.</p>
+    </div>
+    <div class="og" id="tg"></div>
+    <div class="skip-wrap"><button class="skip-link" onclick="skipTipo()">Saltar este paso &#8594;</button></div>
+    <div class="cbar"><b id="c3">--</b> modelos disponibles</div>
+  </div>
+
+  <!-- STEP 4: Funcionalidades -->
+  <div class="step" id="s4">
+    <div class="navrow"><button class="btnback" onclick="bk()">&#8592; Paso anterior</button></div>
+    <div class="shead">
+      <h2 class="stitle">¿Qué funcionalidades priorizas?</h2>
+      <p class="ssub">Elige hasta cuatro características clave para tu chaqueta.</p>
+    </div>
+    <div class="feat-meta">
+      <span class="feat-hint" id="fh">0 de 4 seleccionadas</span>
+      <span class="feat-max" id="fmax">Máximo alcanzado</span>
+    </div>
+    <div class="og" id="fg" style="grid-template-columns:repeat(4,1fr)"></div>
+    <div class="skip-wrap"><button class="skip-link" onclick="skipFeats()">Saltar este paso &#8594;</button></div>
+    <div class="feat-cta" id="fc" style="display:none">
+      <button class="btnver" onclick="showPLP()">Ver resultados &#8594;</button>
+    </div>
+    <div class="cbar"><b id="c4">--</b> modelos disponibles</div>
+  </div>
+
+  <!-- STEP 5: PLP -->
+  <div class="step" id="s5">
+    <div class="navrow" style="justify-content:space-between">
+      <button class="btnback" onclick="bk()">&#8592; Paso anterior</button>
+      <button class="plp-restart" onclick="restart()">Comenzar de nuevo</button>
+    </div>
+    <div class="plp-wrap">
+      <div class="plp-top">
+        <div>
+          <h2 class="plp-title" id="pt">--</h2>
+          <p class="plp-range" id="prange">Tu selección personalizada.</p>
+        </div>
+      </div>
+      <div class="pill-row">
+        <button class="pill" id="pill-asc" onclick="sortBy('asc')">Menor precio</button>
+        <button class="pill" id="pill-desc" onclick="sortBy('desc')">Mayor precio</button>
+        <button class="pill sort-pill active" id="pill-def" onclick="sortBy('def')">Relevancia</button>
+      </div>
+      <div class="pgrid" id="pgrid"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// Catálogo TNF (snapshot derivado del Google Shopping feed)
+const PRODUCTS = [{"id":"NF0A7UJP","name":"Chaqueta 3 En 1 Antora Triclimate Hombre","price":299990,"pfull":null,"disc":null,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a7ujp_nf8ur_1_1.jpg","url":"https://www.thenorthface.cl/m-antora-triclimate-nf0a7ujp-nf8ur","g":["hombre"],"tipo":"componente","a":["trekking"],"c":["lluvia","entretiempo"],"f":["impermeable","termica","capucha"],"ncolors":3},{"id":"NF0A8D1S","name":"Chaqueta Carto Mono Triclimate Hooded Jacket Hombre","price":227990,"pfull":379990,"disc":"40%","img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8d1s_nfbri_1_1.jpg","url":"https://www.thenorthface.cl/chaqueta-carto-mono-triclimate-hooded-jacket-hombre-nf0a8d1s-nfbri","g":["hombre"],"tipo":"componente","a":["montana","trekking"],"c":["lluvia","viento","entretiempo"],"f":["impermeable","cortaviento","termica","transpirable","capucha"],"ncolors":1},{"id":"NF0A8D1U","name":"Chaqueta Classic Down Jacket Hombre","price":179990,"pfull":299990,"disc":"40%","img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8d1u_nfbri_1_1.jpg","url":"https://www.thenorthface.cl/chaqueta-classic-down-jacket-hombre-nf0a8d1u-nfbri","g":["hombre"],"tipo":"pluma","a":["trekking"],"c":["viento","frio"],"f":["cortaviento","pluma","capucha"],"ncolors":1},{"id":"NF0A8B64","name":"Chaqueta Cortaviento Cyclone Wind Hombre","price":99990,"pfull":null,"disc":null,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8b64_nfjk3_1.jpg","url":"https://www.thenorthface.cl/men-s-tnf-cyclone-wind-jacket-nf0a8b64-nfjk3","g":["hombre"],"tipo":"componente","a":["urbano"],"c":["viento","entretiempo"],"f":["cortaviento","termica","capucha"],"ncolors":4},{"id":"NF0A8FYA","name":"Chaqueta Cortaviento Fontanales Wind Jacket Hombre","price":119990,"pfull":null,"disc":null,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8fya_nffnn_1_1.jpg","url":"https://www.thenorthface.cl/chaqueta-cortaviento-fontanales-wind-jacket-hombre-nf0a8fya-nffnn","g":["hombre"],"tipo":"cortaviento","a":["urbano"],"c":["viento","entretiempo"],"f":["cortaviento","capucha"],"ncolors":3},{"id":"NF0A8ES9","name":"Chaqueta Cortaviento Lightrange Woven Jacket Hombre","price":149990,"pfull":null,"disc":null,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8es9_nffnn_1_2.jpg","url":"https://www.thenorthface.cl/chaqueta-cortaviento-lightrange-woven-jacket-hombre-nf0a8es9-nffnn","g":["hombre"],"tipo":"cortaviento","a":["trekking","urbano"],"c":["viento","entretiempo"],"f":["cortaviento","transpirable","capucha"],"ncolors":2},{"id":"NF0A8ES6","name":"Chaqueta Cortaviento Ridgelite Futurefleece Wind Jacket Hombre","price":239990,"pfull":null,"disc":null,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8es6_nfjzu_1_1.jpg","url":"https://www.thenorthface.cl/chaqueta-cortaviento-ridgelite-futurefleece-wind-jacket-hombre-nf0a8es6-nfjzu","g":["hombre"],"tipo":"cortaviento","a":["urbano"],"c":["viento","entretiempo"],"f":["cortaviento","termica"],"ncolors":2},{"id":"NF0A8GBT","name":"Chaqueta Cortaviento Summit Off Width Jacket Hombre","price":299990,"pfull":null,"disc":null,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8gbt_nfbom_1_3.jpg","url":"https://www.thenorthface.cl/chaqueta-cortaviento-summit-off-width-jacket-hombre-nf0a8gbt-nfbom","g":["hombre"],"tipo":"cortaviento","a":["montana","urbano"],"c":["viento","entretiempo"],"f":["cortaviento","capucha"],"ncolors":1},{"id":"NF0A8FPA","name":"Chaqueta Cortaviento Tnf Red Box Taslan Jacket Hombre","price":209990,"pfull":null,"disc":null,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8fpa_nfjk3_1_2.jpg","url":"https://www.thenorthface.cl/chaqueta-cortaviento-tnf-red-box-taslan-jacket-hombre-nf0a8fpa-nfjk3","g":["hombre"],"tipo":"cortaviento","a":["urbano"],"c":["viento","entretiempo"],"f":["cortaviento"],"ncolors":1},{"id":"NF0A3C8D","name":"Chaqueta De Pluma 1996 Retro Nuptse Hombre","price":399990,"pfull":null,"disc":null,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a3c8d_nf4g3-1.jpg","url":"https://www.thenorthface.cl/chaqueta-de-pluma-1996-retro-nuptse-hombre-nf0a3c8d-nfgoe","g":["hombre"],"tipo":"pluma","a":["urbano","nieve","trekking"],"c":["frio"],"f":["pluma","capucha"],"ncolors":2},{"id":"NF0A3JQQ","name":"Chaqueta De Pluma 1996 Retro Nuptse Vest Hombre","price":299990,"pfull":null,"disc":null,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a3jqq_nfdiw_1_2.jpg","url":"https://www.thenorthface.cl/chaqueta-de-pluma-1996-retro-nuptse-vest-hombre-nf0a3jqq-nfdiw","g":["hombre"],"tipo":"pluma","a":["urbano","nieve","trekking"],"c":["frio"],"f":["pluma","capucha"],"ncolors":2},{"id":"NF0A84HZ","name":"Chaqueta De Pluma Aconcagua 3 Hombre","price":188990,"pfull":269990,"disc":"30%","img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a84hz_nf4h0_1_1.jpg","url":"https://www.thenorthface.cl/m-aconcagua-3-jacket-nf0a84hz-nf4h0","g":["hombre"],"tipo":"pluma","a":["trekking"],"c":["frio"],"f":["pluma"],"ncolors":4},{"id":"NF0A84I1","name":"Chaqueta De Pluma Aconcagua 3 Hoodie Hombre","price":202990,"pfull":289990,"disc":"30%","img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a84i1_nf21l_1_1.jpg","url":"https://www.thenorthface.cl/chaqueta-de-pluma-aconcagua-3-hoodie-hombre-nf0a84i1-nf21l","g":["hombre"],"tipo":"pluma","a":["trekking"],"c":["frio"],"f":["pluma","capucha"],"ncolors":5},{"id":"NF0A84IK","name":"Chaqueta De Pluma Aconcagua 3 Vest Hombre","price":146990,"pfull":209990,"disc":"30%","img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a84ik_nf4gv_1_1.jpg","url":"https://www.thenorthface.cl/chaqueta-de-pluma-aconcagua-3-vest-hombre-nf0a84ik-nf4gv","g":["hombre"],"tipo":"pluma","a":["trekking"],"c":["frio"],"f":["pluma","sintetica"],"ncolors":1},{"id":"NF0A5GIE","name":"Chaqueta De Pluma Hydrenalite Hoodie Hombre","price":299990,"pfull":null,"disc":null,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a5gie_nfjk3_1_4.jpg","url":"https://www.thenorthface.cl/hydrenalite-hoodie-nf0a5gie-nfjk3","g":["hombre"],"tipo":"pluma","a":["trekking"],"c":["frio"],"f":["pluma","capucha"],"ncolors":2},{"id":"NF0A87ZM","name":"Chaqueta De Pluma Summit Breithorn Hoodie Hombre","price":499990,"pfull":null,"disc":null,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a87zm_nfd3p_1_1.jpg","url":"https://www.thenorthface.cl/chaqueta-de-pluma-summit-breithorn-hoodie-hombre-nf0a87zm-nfd3p","g":["hombre"],"tipo":"pluma","a":["montana"],"c":["viento","frio"],"f":["cortaviento","pluma","capucha"],"ncolors":1},{"id":"NF0A88XU","name":"Chaqueta De Plumas Hydrenalite Down Hombre","price":167990,"pfull":279990,"disc":"40%","img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a88xu_nfbri_1_5.jpg","url":"https://www.thenorthface.cl/chaqueta-de-plumas-hydrenalite-down-hombre-nf0a88xu-nfbri","g":["hombre"],"tipo":"pluma","a":["trekking"],"c":["frio"],"f":["pluma"],"ncolors":2},{"id":"NF0A7QAW","name":"Chaqueta Impermeable Alta Vista Hombre","price":169990,"pfull":null,"disc":null,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a7qaw_nf0vo_1_1.jpg","url":"https://www.thenorthface.cl/m-alta-vista-jacket-nf0a7qaw-nf0vo","g":["hombre"],"tipo":"impermeable","a":["trekking","montana"],"c":["lluvia","entretiempo"],"f":["impermeable","capucha","packable"],"ncolors":4},{"id":"NF0A7QEY","name":"Chaqueta Impermeable Antora Hombre","price":139990,"pfull":null,"disc":null,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a7qey_nf4h0_1_1.jpg","url":"https://www.thenorthface.cl/m-antora-jacket-nf0a7qey-nf4h0","g":["hombre"],"tipo":"impermeable","a":["montana","trekking"],"c":["lluvia","viento","entretiempo"],"f":["impermeable","cortaviento","termica","transpirable","capucha"],"ncolors":6},{"id":"NF0A7QF3","name":"Chaqueta Impermeable Antora Hoodie Hombre","price":149990,"pfull":null,"disc":null,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a7qf3_nfjy0_1_2.jpg","url":"https://www.thenorthface.cl/chaqueta-impermeable-antora-hoodie-hombre-nf0a7qf3-nfjy0","g":["hombre"],"tipo":"impermeable","a":["trekking"],"c":["lluvia","viento","entretiempo"],"f":["impermeable","cortaviento","capucha"],"ncolors":4},{"id":"NF0A8G0R","name":"Chaqueta Impermeable Dryvent™ Quest Hombre","price":159990,"pfull":null,"disc":null,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8g0r_nfjk3_1_1.jpg","url":"https://www.thenorthface.cl/chaqueta-impermeable-dryvent-quest-hombre-nf0a8g0r-nfjk3","g":["hombre"],"tipo":"impermeable","a":["trekking"],"c":["lluvia","viento","entretiempo"],"f":["impermeable","cortaviento","termica","capucha"],"ncolors":1},{"id":"NF0A7ZZP","name":"Chaqueta Impermeable Kid Antora Niños","price":99990,"pfull":null,"disc":null,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a7zzp_nfkx7_1_1.jpg","url":"https://www.thenorthface.cl/chaqueta-impermeable-kid-antora-ninos-nf0a7zzp-nfkx7","g":["hombre","mujer"],"tipo":"impermeable","a":["trekking"],"c":["lluvia","entretiempo"],"f":["impermeable","transpirable","capucha"],"ncolors":1},{"id":"NF0A86WG","name":"Chaqueta Impermeable Summit Superior Futurelight™ Hombre","price":399990,"pfull":null,"disc":null,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a86wg_nfg6l_1_1.jpg","url":"https://www.thenorthface.cl/chaqueta-impermeable-summit-superior-futurelight-hombre-nf0a86wg-nfg6l","g":["hombre"],"tipo":"impermeable","a":["montana","trekking"],"c":["lluvia","entretiempo"],"f":["impermeable","transpirable","packable","capucha"],"ncolors":3},{"id":"NF0A8ESA","name":"Chaqueta Impermeable Valley View Hombre","price":329990,"pfull":null,"disc":null,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8esa_nfg6l_1_1.jpg","url":"https://www.thenorthface.cl/chaqueta-impermeable-valley-view-hombre-nf0a8esa-nfg6l","g":["hombre"],"tipo":"impermeable","a":["montana","trekking"],"c":["lluvia","viento","entretiempo"],"f":["impermeable","cortaviento","capucha"],"ncolors":3},{"id":"NF0A88WH","name":"Chaqueta Insulada Junction Hombre","price":149990,"pfull":null,"disc":null,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a88wh_nfjk3_1_1.jpg","url":"https://www.thenorthface.cl/men-s-junction-insulated-jacket-nf0a88wh-nfjk3","g":["hombre"],"tipo":"sintetica","a":["trekking"],"c":["frio"],"f":["sintetica"],"ncolors":3},{"id":"NF0A88UE","name":"Chaqueta Insulada Reversible Perrito Hooded Jacket Niños","price":149990,"pfull":null,"disc":null,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a88ue_nfk61_1_2.jpg","url":"https://www.thenorthface.cl/chaqueta-insulada-reversible-perrito-hooded-jacket-ninos-nf0a88ue-nfk61","g":["hombre","mujer"],"tipo":"sintetica","a":["trekking"],"c":["frio"],"f":["sintetica","capucha"],"ncolors":1},{"id":"NF0A7UTA","name":"Chaqueta Insulada Summit Casaval Hybrid Hoodie Hombre","price":299990,"pfull":null,"disc":null,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a7uta_nfbom_1_1.jpg","url":"https://www.thenorthface.cl/chaqueta-insulada-summit-casaval-hybrid-hoodie-hombre-nf0a7uta-nfbom","g":["hombre"],"tipo":"sintetica","a":["montana"],"c":["frio"],"f":["sintetica","capucha"],"ncolors":1},{"id":"NF0A88U2","name":"Chaqueta Insulada Terra Peak Hombre","price":269990,"pfull":null,"disc":null,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a88u2_nfjk3_1_1.jpg","url":"https://www.thenorthface.cl/m-terra-peak-jacket-nf0a88u2-nfjk3","g":["hombre"],"tipo":"sintetica","a":["trekking"],"c":["viento","frio"],"f":["cortaviento","sintetica"],"ncolors":3},{"id":"NF0A8D1P","name":"Chaqueta Insulada Thermoball Jacket Hombre","price":249990,"pfull":null,"disc":null,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8d1p_nfbri_1_1.jpg","url":"https://www.thenorthface.cl/chaqueta-insulada-thermoball-jacket-hombre-nf0a8d1p-nfbri","g":["hombre"],"tipo":"sintetica","a":["urbano"],"c":["viento","frio"],"f":["cortaviento","sintetica"],"ncolors":1},{"id":"NF0A8D1Q","name":"Chaqueta Insulada Thermoball Vest Hombre","price":199990,"pfull":null,"disc":null,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8d1q_nfbri_1_1.jpg","url":"https://www.thenorthface.cl/chaqueta-insulada-thermoball-vest-hombre-nf0a8d1q-nfbri","g":["hombre"],"tipo":"sintetica","a":["urbano"],"c":["viento","frio"],"f":["cortaviento","sintetica"],"ncolors":1},{"id":"NF0A5GJF","name":"Chaqueta Mcmurdo Parka Hombre","price":275990,"pfull":459990,"disc":"40%","img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a5gjf_nfekp_1_1.jpg","url":"https://www.thenorthface.cl/chaqueta-mcmurdo-parka-hombre-nf0a5gjf-nfekp","g":["hombre"],"tipo":"pluma","a":["trekking"],"c":["lluvia","frio"],"f":["impermeable","pluma","sintetica","capucha"],"ncolors":1},{"id":"NF0A82VU","name":"Chaqueta Nieve Freedom Insulated Hombre","price":221990,"pfull":369990,"disc":"40%","img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a82vu_nfd20_1_2.jpg","url":"https://www.thenorthface.cl/chaqueta-nieve-freedom-insulated-hombre-nf0a82vu-nfd20","g":["hombre"],"tipo":"nieve","a":["montana","trekking","nieve"],"c":["lluvia","frio"],"f":["impermeable","sintetica","transpirable","capucha"],"ncolors":1},{"id":"NF0A8C8X","name":"Chaqueta Summit Cayesh Gtx Pro Jacket Hombre","price":749990,"pfull":null,"disc":null,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8c8x_nfbom_1_1.jpg","url":"https://www.thenorthface.cl/chaqueta-summit-cayesh-gtx-pro-jacket-hombre-nf0a8c8x-nfbom","g":["hombre"],"tipo":"impermeable","a":["montana","trekking"],"c":["lluvia","entretiempo"],"f":["impermeable","capucha"],"ncolors":1},{"id":"NF0A8C95","name":"Chaqueta Summit Himalayan Down Parka Hombre","price":799990,"pfull":null,"disc":null,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8c95_nfzu3_1_1.jpg","url":"https://www.thenorthface.cl/chaqueta-summit-himalayan-down-parka-hombre-nf0a8c95-nfzu3","g":["hombre"],"tipo":"pluma","a":["montana","trekking","urbano"],"c":["lluvia","viento","frio"],"f":["impermeable","cortaviento","pluma","capucha"],"ncolors":1},{"id":"NF0A5G9V","name":"Polar Canyonlands Hombre","price":65990,"pfull":109990,"disc":"40%","img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a5g9v_nf4h0_1_1.jpg","url":"https://www.thenorthface.cl/m-canyonlands-full-zip-nf0a5g9v-nf4h0","g":["hombre"],"tipo":"fleece","a":["trekking"],"c":["entretiempo"],"f":["termica"],"ncolors":1},{"id":"NF0A8AZF","name":"Polar Cedar Trail Grid Hombre","price":99990,"pfull":null,"disc":null,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8azf_nfjk3_1_1.jpg","url":"https://www.thenorthface.cl/m-cedar-trail-grid-fleece-full-zip-jacket-nf0a8azf-nfjk3","g":["hombre"],"tipo":"fleece","a":["trekking"],"c":["entretiempo"],"f":["termica"],"ncolors":5},{"id":"NF0A897C","name":"Polar Crest Hombre","price":139990,"pfull":null,"disc":null,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a897c_nfk23_1_2.jpg","url":"https://www.thenorthface.cl/polar-crest-hombre-nf0a897c-nfk23","g":["hombre"],"tipo":"fleece","a":["trekking"],"c":["viento","entretiempo"],"f":["cortaviento","termica"],"ncolors":2},{"id":"NF0A8D0Q","name":"Polar Glacier Fleece 1/4 Zip Jacket Hombre","price":89990,"pfull":null,"disc":null,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8d0q_nfg5l_1_2.jpg","url":"https://www.thenorthface.cl/polar-glacier-fleece-1-4-zip-jacket-hombre-nf0a8d0q-nfg5l","g":["hombre"],"tipo":"fleece","a":["trekking"],"c":["entretiempo","lluvia"],"f":["termica","impermeable"],"ncolors":4},{"id":"NF0A8D0R","name":"Polar Glacier Fleece Jacket Hombre","price":109990,"pfull":null,"disc":null,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8d0r_nfjk3_1_1.jpg","url":"https://www.thenorthface.cl/chaqueta-glacier-fleece-jacket-hombre-nf0a8d0r-nfjk3","g":["hombre"],"tipo":"fleece","a":["trekking","urbano"],"c":["lluvia","entretiempo"],"f":["impermeable","termica"],"ncolors":7},{"id":"NF0A8AZA","name":"Polar Glacier Hombre","price":109990,"pfull":null,"disc":null,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8aza_nfjk3_1_1.jpg","url":"https://www.thenorthface.cl/men-s-glacier-fleece-jacket-nf0a8aza-nfjk3","g":["hombre"],"tipo":"fleece","a":["trekking"],"c":["entretiempo"],"f":["termica"],"ncolors":1},{"id":"NF0A8AZB","name":"Polar Glacier ½ Zip Hombre","price":89990,"pfull":null,"disc":null,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8azb_nf0uz_1_2.jpg","url":"https://www.thenorthface.cl/men-s-glacier-fleece-1-2-zip-nf0a8azb-nf0uz","g":["hombre"],"tipo":"fleece","a":["trekking"],"c":["entretiempo"],"f":["termica"],"ncolors":1},{"id":"NF0A8CVH","name":"Polar Kid Glacier Full Zip Hoodie Niños","price":59990,"pfull":null,"disc":null,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8cvh_nfg52_1_2.jpg","url":"https://www.thenorthface.cl/polar-kid-glacier-full-zip-hoodie-ninos-nf0a8cvh-nfg52","g":["hombre","mujer"],"tipo":"fleece","a":["trekking","urbano"],"c":["lluvia","entretiempo"],"f":["impermeable","termica","capucha"],"ncolors":3},{"id":"NF0A8B18","name":"Polar Kid Glacier Hoodie Niños","price":35990,"pfull":59990,"disc":"40%","img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8b18_nf6ei_1_1.jpg","url":"https://www.thenorthface.cl/polar-kid-glacier-hoodie-ninos-nf0a8b18-nf6ei","g":["hombre","mujer"],"tipo":"fleece","a":["trekking"],"c":["entretiempo"],"f":["termica","capucha"],"ncolors":1},{"id":"NF0A88XH","name":"Polar Retro Denali Hombre","price":209990,"pfull":null,"disc":null,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a88xh_nfdiw_1_4.jpg","url":"https://www.thenorthface.cl/polar-retro-denali-hombre-nf0a88xh-nfdiw","g":["hombre"],"tipo":"fleece","a":["montana"],"c":["entretiempo"],"f":["termica"],"ncolors":1},{"id":"NF0A5J7S","name":"Polar Summit Futurefleece Hoodie Hombre","price":209990,"pfull":null,"disc":null,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a5j7s_nfbom_1_2.jpg","url":"https://www.thenorthface.cl/polar-summit-futurefleece-hoodie-hombre-nf0a5j7s-nfbom","g":["hombre"],"tipo":"fleece","a":["trekking"],"c":["entretiempo"],"f":["termica","capucha"],"ncolors":1},{"id":"NF0A8AZK","name":"Polar Teen Glacier Hooded Niños","price":41990,"pfull":69990,"disc":"40%","img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8azk_nfjk3_1_1.jpg","url":"https://www.thenorthface.cl/teen-glacier-f-z-hooded-jacket-nf0a8azk-nfjk3","g":["hombre","mujer"],"tipo":"fleece","a":["trekking"],"c":["entretiempo"],"f":["termica","capucha"],"ncolors":4},{"id":"NF0A3YR1","name":"Polar Textured Cap Rock ¼ Zip Hombre","price":79990,"pfull":null,"disc":null,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a3yr1_nfdxd_1_1.jpg","url":"https://www.thenorthface.cl/polar-textured-cap-rock-zip-hombre-nf0a3yr1-nfdxd","g":["hombre"],"tipo":"fleece","a":["trekking","montana","urbano"],"c":["entretiempo"],"f":["termica"],"ncolors":3},{"id":"NF0A8CVT","name":"Polar Tnf Performance Fleece Full Zip Hoodie Hombre","price":71990,"pfull":119990,"disc":"40%","img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8cvt_nf8k2_1_1.jpg","url":"https://www.thenorthface.cl/polar-tnf-performance-fleece-full-zip-hoodie-hombre-nf0a8cvt-nf8k2","g":["hombre"],"tipo":"fleece","a":["trekking"],"c":["entretiempo"],"f":["termica","capucha"],"ncolors":2},{"id":"NF0A8CVV","name":"Polar Tnf Performance Fleece Full Zip Jacket Hombre","price":109990,"pfull":null,"disc":null,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8cvv_nf0uz_1_1.jpg","url":"https://www.thenorthface.cl/polar-tnf-performance-fleece-full-zip-jacket-hombre-nf0a8cvv-nf0uz","g":["hombre"],"tipo":"fleece","a":["trekking","urbano","montana"],"c":["entretiempo"],"f":["termica"],"ncolors":4},{"id":"NF0A8FH8","name":"Polar Tnf Red Box Reversible Fleece Jacket Hombre","price":269990,"pfull":null,"disc":null,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8fh8_nfobi_1_1.jpg","url":"https://www.thenorthface.cl/polar-tnf-red-box-reversible-fleece-jacket-hombre-nf0a8fh8-nfobi","g":["hombre"],"tipo":"fleece","a":["trekking"],"c":["entretiempo"],"f":["termica"],"ncolors":1},{"id":"NF0A883R","name":"Polar Yumiori Hombre","price":119990,"pfull":null,"disc":null,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a883r_nfm5i_1_3.jpg","url":"https://www.thenorthface.cl/polar-yumiori-hombre-nf0a883r-nfm5i","g":["hombre"],"tipo":"fleece","a":["montana","urbano"],"c":["entretiempo"],"f":["termica"],"ncolors":2},{"id":"NF0A883S","name":"Polar Yumiori ¼ Zip Hombre","price":99990,"pfull":null,"disc":null,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a883s_nfm0o_1_2.jpg","url":"https://www.thenorthface.cl/polar-yumiori-zip-hombre-nf0a883s-nfm0o","g":["hombre"],"tipo":"fleece","a":["montana","urbano"],"c":["entretiempo"],"f":["termica"],"ncolors":1},{"id":"NF0A7UKN","name":"Chaqueta 3 En 1 Antora Triclimate Mujer","price":299990,"pfull":null,"disc":null,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a7ukn_nf4h0_1_1.jpg","url":"https://www.thenorthface.cl/chaqueta-3-en-1-antora-triclimate-mujer-nf0a7ukn-nf4h0","g":["mujer"],"tipo":"componente","a":["trekking"],"c":["lluvia","entretiempo"],"f":["impermeable","termica","capucha"],"ncolors":1},{"id":"NF0A8DEF","name":"Chaqueta Antora Triclimate Jacket Mujer","price":299990,"pfull":null,"disc":null,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8def_nfjk3_1_1.jpg","url":"https://www.thenorthface.cl/chaqueta-impermeable-antora-triclimate-jacket-mujer-nf0a8def-nfjk3","g":["mujer"],"tipo":"componente","a":["trekking"],"c":["lluvia","entretiempo"],"f":["impermeable","termica"],"ncolors":2},{"id":"NF0A8B6G","name":"Chaqueta Cortaviento Cyclone Wind Mujer","price":59990,"pfull":99990,"disc":"40%","img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8b6g_nf6c4_1_1.jpg","url":"https://www.thenorthface.cl/chaqueta-cortaviento-cyclone-wind-mujer-nf0a8b6g-nf6c4","g":["mujer"],"tipo":"cortaviento","a":["urbano"],"c":["viento","entretiempo"],"f":["cortaviento","termica","capucha"],"ncolors":3},{"id":"NF0A8720","name":"Chaqueta Cortaviento Higher Run Wind Mujer","price":83990,"pfull":139990,"disc":"40%","img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8720_nf63m_1_1.jpg","url":"https://www.thenorthface.cl/chaqueta-cortaviento-higher-run-wind-mujer-nf0a8720-nf63m","g":["mujer"],"tipo":"cortaviento","a":["urbano"],"c":["viento","entretiempo"],"f":["cortaviento","transpirable","capucha"],"ncolors":1},{"id":"NF0A8ER2","name":"Chaqueta Cortaviento Lightrange Woven Jacket Mujer","price":149990,"pfull":null,"disc":null,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8er2_nfjn5_1_1.jpg","url":"https://www.thenorthface.cl/chaqueta-cortaviento-lightrange-woven-jacket-mujer-nf0a8er2-nfjn5","g":["mujer"],"tipo":"cortaviento","a":["trekking","urbano"],"c":["viento","entretiempo"],"f":["cortaviento","transpirable"],"ncolors":1},{"id":"NF0A8ERK","name":"Chaqueta Cortaviento Ridgelite Futurefleece Wind Jacket Mujer","price":239990,"pfull":null,"disc":null,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8erk_nfgm4_1_1.jpg","url":"https://www.thenorthface.cl/chaqueta-cortaviento-ridgelite-futurefleece-wind-jacket-mujer-nf0a8erk-nfgm4","g":["mujer"],"tipo":"cortaviento","a":["urbano"],"c":["viento","entretiempo"],"f":["cortaviento","termica"],"ncolors":1},{"id":"NF0A3XEO","name":"Chaqueta De Pluma 1996 Retro Nuptse Mujer","price":399990,"pfull":null,"disc":null,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a3xeo_nfgof_1_1.jpg","url":"https://www.thenorthface.cl/chaqueta-de-pluma-1996-retro-nuptse-mujer-nf0a3xeo-nfgof","g":["mujer"],"tipo":"pluma","a":["urbano","nieve","trekking"],"c":["frio"],"f":["pluma","capucha"],"ncolors":3},{"id":"NF0A3XEP","name":"Chaqueta De Pluma 1996 Retro Nuptse Vest Mujer","price":299990,"pfull":null,"disc":null,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a3xep_nfgof_1_2.jpg","url":"https://www.thenorthface.cl/chaqueta-de-pluma-1996-retro-nuptse-vest-mujer-nf0a3xep-nfgof","g":["mujer"],"tipo":"pluma","a":["trekking"],"c":["frio"],"f":["pluma","capucha"],"ncolors":1},{"id":"NF0A84IU","name":"Chaqueta De Pluma Aconcagua 3 Mujer","price":161990,"pfull":269990,"disc":"40%","img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a84iu_nfbou_1_1.jpg","url":"https://www.thenorthface.cl/chaqueta-de-pluma-aconcagua-3-mujer-nf0a84iu-nfbou","g":["mujer"],"tipo":"pluma","a":["trekking"],"c":["frio"],"f":["pluma"],"ncolors":2},{"id":"NF0A84JP","name":"Chaqueta De Pluma Aconcagua 3 Vest Mujer","price":125990,"pfull":209990,"disc":"40%","img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a84jp_nfbq5_1_1.jpg","url":"https://www.thenorthface.cl/chaqueta-de-pluma-aconcagua-3-vest-mujer-nf0a84jp-nfbq5","g":["mujer"],"tipo":"pluma","a":["trekking"],"c":["viento","frio"],"f":["cortaviento","pluma"],"ncolors":1},{"id":"NF0A5GGG","name":"Chaqueta De Pluma Hydrenalite Hoodie Mujer","price":167990,"pfull":279990,"disc":"40%","img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a5ggg_nfbtr_1_1.jpg","url":"https://www.thenorthface.cl/chaqueta-de-pluma-hydrenalite-hoodie-mujer-nf0a5ggg-nfbtr","g":["mujer"],"tipo":"pluma","a":["trekking"],"c":["frio"],"f":["pluma","capucha"],"ncolors":1},{"id":"NF0A8805","name":"Chaqueta De Pluma Summit Breithorn Hoodie Mujer","price":499990,"pfull":null,"disc":null,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8805_nfe27_1_1.jpg","url":"https://www.thenorthface.cl/chaqueta-de-pluma-summit-breithorn-hoodie-mujer-nf0a8805-nfe27","g":["mujer"],"tipo":"pluma","a":["montana"],"c":["viento","frio"],"f":["cortaviento","pluma","capucha"],"ncolors":1},{"id":"NF0A88YX","name":"Chaqueta Dryvent Mono Mountain Jacket Mujer","price":329990,"pfull":null,"disc":null,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a88yx_nfrou_1_1.jpg","url":"https://www.thenorthface.cl/chaqueta-dryvent-mono-mountain-jacket-mujer-nf0a88yx-nfrou","g":["mujer"],"tipo":"impermeable","a":["montana","trekking"],"c":["lluvia","entretiempo"],"f":["impermeable"],"ncolors":1},{"id":"NF0A8D3J","name":"Chaqueta Hydrenalite City Down Hooded Jacket Mujer","price":185990,"pfull":309990,"disc":"40%","img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8d3j_nf8k2_1_1.jpg","url":"https://www.thenorthface.cl/chaqueta-hydrenalite-city-down-hooded-jacket-mujer-nf0a8d3j-nf8k2","g":["mujer"],"tipo":"pluma","a":["urbano"],"c":["frio"],"f":["pluma","capucha"],"ncolors":1},{"id":"NF0A8BK9","name":"Chaqueta Impermeable Alta Vista Mujer","price":169990,"pfull":null,"disc":null,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8bk9_nfg74_1_1.jpg","url":"https://www.thenorthface.cl/chaqueta-impermeable-alta-vista-mujer-nf0a8bk9-nfg74","g":["mujer"],"tipo":"impermeable","a":["montana","trekking"],"c":["lluvia","entretiempo"],"f":["impermeable","packable","capucha"],"ncolors":4},{"id":"NF0A8BKD","name":"Chaqueta Impermeable Antora Mujer","price":139990,"pfull":null,"disc":null,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8bkd_nfjk3_1_1.jpg","url":"https://www.thenorthface.cl/chaqueta-impermeable-antora-mujer-nf0a8bkd-nfjk3","g":["mujer"],"tipo":"impermeable","a":["trekking","urbano","montana"],"c":["lluvia","viento","entretiempo"],"f":["impermeable","cortaviento","capucha","termica","transpirable"],"ncolors":6},{"id":"NF0A8BKC","name":"Chaqueta Impermeable Antora Rain Parka Mujer","price":149990,"pfull":null,"disc":null,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8bkc_nfjk3_1_1.jpg","url":"https://www.thenorthface.cl/chaqueta-impermeable-antora-rain-parka-mujer-nf0a8bkc-nfjk3","g":["mujer"],"tipo":"impermeable","a":["montana","trekking"],"c":["lluvia","entretiempo"],"f":["impermeable","capucha"],"ncolors":2},{"id":"NF0A8B6D","name":"Chaqueta Impermeable Daybreak Mid Parka Mujer","price":137990,"pfull":229990,"disc":"40%","img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8b6dbq5-hero2.png","url":"https://www.thenorthface.cl/chaqueta-impermeable-daybreak-mid-parka-mujer-nf0a8b6d-nfbq5","g":["mujer"],"tipo":"impermeable","a":["trekking"],"c":["lluvia","viento","entretiempo"],"f":["impermeable","cortaviento","transpirable","capucha"],"ncolors":1},{"id":"NF0A8A4E","name":"Chaqueta Impermeable Summit Papsura Futurelight™ Mujer","price":263990,"pfull":439990,"disc":"40%","img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8a4e_nf6ib_1_1.jpg","url":"https://www.thenorthface.cl/chaqueta-impermeable-summit-papsura-futurelight-mujer-nf0a8a4e-nf6ib","g":["mujer"],"tipo":"impermeable","a":["trekking"],"c":["lluvia","entretiempo"],"f":["impermeable"],"ncolors":1},{"id":"NF0A86WH","name":"Chaqueta Impermeable Summit Superior Futurelight Mujer","price":239990,"pfull":399990,"disc":"40%","img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a86wh_nf5a2_1.jpg","url":"https://www.thenorthface.cl/chaqueta-impermeable-summit-superior-futurelight-mujer-nf0a86wh-nf5a2","g":["mujer"],"tipo":"impermeable","a":["montana","trekking"],"c":["lluvia","entretiempo"],"f":["impermeable","transpirable","packable"],"ncolors":1},{"id":"NF0A8DDW","name":"Chaqueta Impermeable Summit Superior Futurelight™ Mujer","price":399990,"pfull":null,"disc":null,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8ddw_nfg6l_1_1.jpg","url":"https://www.thenorthface.cl/chaqueta-impermeable-summit-superior-futurelight-mujer-nf0a8ddw-nfg6l","g":["mujer"],"tipo":"impermeable","a":["trekking"],"c":["lluvia","entretiempo"],"f":["impermeable","capucha"],"ncolors":1},{"id":"NF0A8ERF","name":"Chaqueta Impermeable Valley View Mujer","price":329990,"pfull":null,"disc":null,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8erf_nfg4y_1_1.jpg","url":"https://www.thenorthface.cl/chaqueta-impermeable-valley-view-mujer-nf0a8erf-nfg4y","g":["mujer"],"tipo":"impermeable","a":["montana","trekking"],"c":["lluvia","viento","entretiempo"],"f":["impermeable","cortaviento","capucha"],"ncolors":2},{"id":"NF0A88TG","name":"Chaqueta Insulada Junction Mujer","price":149990,"pfull":null,"disc":null,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a88tg_nfqli_1_2.jpg","url":"https://www.thenorthface.cl/chaqueta-insulada-junction-mujer-nf0a88tg-nfqli","g":["mujer"],"tipo":"sintetica","a":["trekking"],"c":["viento","frio"],"f":["cortaviento","sintetica"],"ncolors":2},{"id":"NF0A88TU","name":"Chaqueta Insulada Terra Peak Hoodie Mujer","price":173990,"pfull":289990,"disc":"40%","img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a88tu_nf6if_1_1.jpg","url":"https://www.thenorthface.cl/chaqueta-insulada-terra-peak-hoodie-mujer-nf0a88tu-nf6if","g":["mujer"],"tipo":"sintetica","a":["montana","urbano"],"c":["viento","frio"],"f":["cortaviento","sintetica","capucha"],"ncolors":1},{"id":"NF0A8D3S","name":"Chaqueta Insulada Thermoball Jacket Mujer","price":249990,"pfull":null,"disc":null,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8d3s_nfg74_1_1.jpg","url":"https://www.thenorthface.cl/chaqueta-insulada-thermoball-jacket-mujer-nf0a8d3s-nfg74","g":["mujer"],"tipo":"sintetica","a":["montana","urbano"],"c":["viento","frio"],"f":["cortaviento","sintetica"],"ncolors":1},{"id":"NF0A8CAP","name":"Chaqueta Summit Himalayan Down Parka Mujer","price":799990,"pfull":null,"disc":null,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8cap_nfzu3_1_1.jpg","url":"https://www.thenorthface.cl/chaqueta-summit-himalayan-down-parka-mujer-nf0a8cap-nfzu3","g":["mujer"],"tipo":"pluma","a":["montana","trekking","urbano"],"c":["lluvia","viento","frio"],"f":["impermeable","cortaviento","pluma","capucha"],"ncolors":1},{"id":"NF0A5GBD","name":"Polar Canyonlands Mujer","price":65990,"pfull":109990,"disc":"40%","img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a5gbd_nfqmo_1_2.jpg","url":"https://www.thenorthface.cl/polar-canyonlands-mujer-nf0a5gbd-nfqmo","g":["mujer"],"tipo":"fleece","a":["trekking"],"c":["entretiempo"],"f":["termica"],"ncolors":1},{"id":"NF0A8D2C","name":"Polar Glacier Fleece 1/2 Zip Short Jacket Mujer","price":99990,"pfull":null,"disc":null,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8d2c_nfjk3_1_1.jpg","url":"https://www.thenorthface.cl/polar-glacier-fleece-1-2-zip-short-jacket-mujer-nf0a8d2c-nfjk3","g":["mujer"],"tipo":"fleece","a":["montana","urbano"],"c":["entretiempo"],"f":["termica"],"ncolors":1},{"id":"NF0A8D2F","name":"Polar Glacier Fleece Jacket Mujer","price":109990,"pfull":null,"disc":null,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8d2f_nfjk3_1_1.jpg","url":"https://www.thenorthface.cl/chaqueta-glacier-fleece-jacket-mujer-nf0a8d2f-nfjk3","g":["mujer"],"tipo":"fleece","a":["trekking","urbano"],"c":["lluvia","entretiempo"],"f":["impermeable","termica"],"ncolors":6},{"id":"NF0A8AYM","name":"Polar Glacier Mujer","price":109990,"pfull":null,"disc":null,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8aym_nfjk3_1_1.jpg","url":"https://www.thenorthface.cl/polar-glacier-mujer-nf0a8aym-nfjk3","g":["mujer"],"tipo":"fleece","a":["trekking"],"c":["entretiempo"],"f":["termica"],"ncolors":5},{"id":"NF0A8AYP","name":"Polar Glacier ½ Snap Mujer","price":89990,"pfull":null,"disc":null,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8ayp_nfjk3_1_1.jpg","url":"https://www.thenorthface.cl/polar-glacier-1-2-snap-mujer-nf0a8ayp-nfjk3","g":["mujer"],"tipo":"fleece","a":["trekking"],"c":["entretiempo"],"f":["termica"],"ncolors":2},{"id":"NF0A7UQJ","name":"Polar Osito Mujer","price":119990,"pfull":null,"disc":null,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a7uqj_nfqli_1_1.jpg","url":"https://www.thenorthface.cl/polar-osito-mujer-nf0a7uqj-nfqli","g":["mujer"],"tipo":"fleece","a":["trekking"],"c":["entretiempo"],"f":["termica"],"ncolors":3},{"id":"NF0A88YR","name":"Polar Retro Denali Mujer","price":209990,"pfull":null,"disc":null,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a88yr_nff0i_1_2.jpg","url":"https://www.thenorthface.cl/polar-retro-denali-mujer-nf0a88yr-nff0i","g":["mujer"],"tipo":"fleece","a":["montana"],"c":["entretiempo"],"f":["termica"],"ncolors":1},{"id":"NF0A5J8T","name":"Polar Summit Futurefleece™ Hoodie Mujer","price":209990,"pfull":null,"disc":null,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a5j8t_nf4h0_1_1.jpg","url":"https://www.thenorthface.cl/polar-summit-futurefleece-hoodie-mujer-nf0a5j8t-nf4h0","g":["mujer"],"tipo":"fleece","a":["trekking"],"c":["entretiempo"],"f":["termica","capucha"],"ncolors":3},{"id":"NF0A8DWR","name":"Polar Tnf Performance Fleece Full Zip Jacket Mujer","price":109990,"pfull":null,"disc":null,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8dwr_nf0uz_1_1.jpg","url":"https://www.thenorthface.cl/polar-tnf-performance-fleece-full-zip-jacket-mujer-nf0a8dwr-nf0uz","g":["mujer"],"tipo":"fleece","a":["trekking"],"c":["entretiempo"],"f":["termica"],"ncolors":4},{"id":"NF0A8CVS","name":"Polar Tnf Performance Fleece ¼ Zip Mujer","price":99990,"pfull":null,"disc":null,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8cvs_nfjk3_1_1.jpg","url":"https://www.thenorthface.cl/polar-tnf-performance-fleece-zip-mujer-nf0a8cvs-nfjk3","g":["mujer"],"tipo":"fleece","a":["trekking"],"c":["entretiempo"],"f":["termica"],"ncolors":1},{"id":"NF0A8E88","name":"Polar Yumiori Full Zip Mujer","price":119990,"pfull":null,"disc":null,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8e88_nfm5u_1_1.jpg","url":"https://www.thenorthface.cl/polar-yumiori-full-zip-mujer-nf0a8e88-nfm5u","g":["mujer"],"tipo":"fleece","a":["montana","urbano"],"c":["entretiempo"],"f":["termica"],"ncolors":1},{"id":"NF0A8ANM","name":"Chaqueta Cortaviento Cyclone Wind Niños","price":79990,"pfull":null,"disc":null,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8anm_nfjk3_1.jpg","url":"https://www.thenorthface.cl/chaqueta-cortaviento-cyclone-wind-ninos-nf0a8anm-nfjk3","g":["nino"],"tipo":"cortaviento","a":["urbano"],"c":["viento","entretiempo"],"f":["cortaviento","capucha"],"ncolors":2},{"id":"NF0A8A4C","name":"Chaqueta De Pluma Teen 1996 Retro Nuptse Niños","price":299990,"pfull":null,"disc":null,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8a4c_nfgog_1_1.jpg","url":"https://www.thenorthface.cl/chaqueta-de-pluma-teen-1996-retro-nuptse-ninos-nf0a8a4c-nfgog","g":["nino"],"tipo":"pluma","a":["trekking"],"c":["frio"],"f":["pluma"],"ncolors":2},{"id":"NF0A88UG","name":"Chaqueta Freedom Insulated Jacket Niña","price":119990,"pfull":199990,"disc":"40%","img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a88ug_nfbos_1_1.jpg","url":"https://www.thenorthface.cl/chaqueta-freedom-insulated-jacket-nina-nf0a88ug-nfbos","g":["nino"],"tipo":"nieve","a":["montana","trekking","nieve"],"c":["lluvia","viento","entretiempo"],"f":["impermeable","cortaviento","capucha"],"ncolors":1},{"id":"NF0A8A49","name":"Chaqueta Impermeable Antora Niña","price":109990,"pfull":null,"disc":null,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8a49_nfm9o_1_2.jpg","url":"https://www.thenorthface.cl/chaqueta-impermeable-antora-nina-nf0a8a49-nfm9o","g":["nino"],"tipo":"impermeable","a":["trekking"],"c":["lluvia","entretiempo"],"f":["impermeable","transpirable","capucha"],"ncolors":2},{"id":"NF0A8A48","name":"Chaqueta Impermeable Antora Niños","price":109990,"pfull":null,"disc":null,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8a48_nf8k2_1_1.jpg","url":"https://www.thenorthface.cl/chaqueta-impermeable-antora-ninos-nf0a8a48-nf8k2","g":["nino"],"tipo":"impermeable","a":["trekking"],"c":["lluvia","entretiempo"],"f":["impermeable","transpirable","capucha"],"ncolors":2},{"id":"NF0A873R","name":"Chaqueta Impermeable Warm Antora Niña","price":139990,"pfull":null,"disc":null,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a873r_nfqix_1_2.jpg","url":"https://www.thenorthface.cl/chaqueta-impermeable-warm-antora-nina-nf0a873r-nfqix","g":["nino"],"tipo":"impermeable","a":["trekking"],"c":["lluvia","frio"],"f":["impermeable","sintetica","transpirable","capucha"],"ncolors":1},{"id":"NF0A873S","name":"Chaqueta Impermeable Warm Antora Niño","price":139990,"pfull":null,"disc":null,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a873s_nfg6l_1_4.jpg","url":"https://www.thenorthface.cl/chaqueta-impermeable-warm-antora-nino-nf0a873s-nfg6l","g":["nino"],"tipo":"impermeable","a":["trekking"],"c":["lluvia","frio"],"f":["impermeable","sintetica","transpirable","capucha"],"ncolors":2},{"id":"NF0A8CVF","name":"Polar Teen Glacier Full Zip Hoodie Niño","price":69990,"pfull":null,"disc":null,"img":"https://www.thenorthface.cl/media/catalog/product/n/f/nf0a8cvf_nf8k2_1_1.jpg","url":"https://www.thenorthface.cl/polar-teen-glacier-full-zip-hoodie-nino-nf0a8cvf-nf8k2","g":["nino"],"tipo":"fleece","a":["urbano","trekking"],"c":["entretiempo"],"f":["termica","capucha"],"ncolors":2}];
+
+const ST = {g:null,c:null,tipo:null,feat:[],step:1,sort:'def'};
+
+const COND = [
+  {id:'lluvia',     l:'Lluvia',        s:'Impermeable',       svg:'<path d="M12 2C8 8 5 12 5 16a7 7 0 0014 0c0-4-3-8-7-14z"/>'},
+  {id:'frio',       l:'Frío intenso',  s:'Aislación y abrigo', svg:'<path d="M12 2v20M4 6l16 12M20 6L4 18M2 12h20"/>'},
+  {id:'viento',     l:'Viento',        s:'Cortaviento',       svg:'<path d="M3 8h11a3 3 0 100-6M3 16h14a3 3 0 110 6M3 12h18"/>'},
+  {id:'entretiempo',l:'Entretiempo',   s:'Capas ligeras',     svg:'<path d="M17 18a5 5 0 000-10 6 6 0 00-11 2 4 4 0 00-1 8z"/><path d="M12 2v2" opacity=".6"/>'},
+];
+
+const GEN_LABEL={hombre:'Hombre',mujer:'Mujer',nino:'Niños'};
+const COND_LABEL={lluvia:'Lluvia',frio:'Frío intenso',viento:'Viento',entretiempo:'Entretiempo'};
+const TIPO_LABEL={pluma:'Pluma',impermeable:'Impermeable',sintetica:'Sintética',cortaviento:'Cortaviento',softshell:'Softshell',casual:'Casual',nieve:'Nieve',componente:'3-en-1 / Capa',fleece:'Polar / Fleece',otro:'Otra'};
+const TIPO_SUB={pluma:'Relleno natural',impermeable:'Shell sin relleno',sintetica:'Relleno sintético',cortaviento:'Ligera cortaviento',softshell:'Elástica y transpirable',casual:'Uso diario',nieve:'Nieve y montaña',componente:'Sistema por capas',fleece:'Capa térmica',otro:''};
+
+const FEATS = [
+  {id:'impermeable', l:'Impermeable',   svg:'<path d="M12 2C8 8 5 12 5 16a7 7 0 0014 0c0-4-3-8-7-14z"/>'},
+  {id:'cortaviento', l:'Cortaviento',   svg:'<path d="M3 8h11a3 3 0 100-6M3 16h14a3 3 0 110 6M3 12h18"/>'},
+  {id:'pluma',       l:'Aislación pluma', svg:'<path d="M20 4C10 6 6 12 5 20M5 20l6-2M5 20l2-6M9 15c3-1 6-4 8-9"/>'},
+  {id:'sintetica',   l:'Aislación sintética', svg:'<rect x="3" y="8" width="18" height="8" rx="4"/><path d="M7 8V6m5 2V5m5 3V6"/>'},
+  {id:'termica',     l:'Térmica / fleece', svg:'<path d="M12 2v20M4 6l16 12M20 6L4 18"/>'},
+  {id:'transpirable',l:'Transpirable',  svg:'<path d="M5 12h14M5 8h14M5 16h14" stroke-linecap="round"/>'},
+  {id:'packable',    l:'Packable',      svg:'<path d="M4 7l8-4 8 4v10l-8 4-8-4z"/><path d="M4 7l8 4 8-4M12 11v10"/>'},
+  {id:'capucha',     l:'Con capucha',   svg:'<path d="M12 3c-5 0-8 4-8 9 0 3 2 6 8 9 6-3 8-6 8-9 0-5-3-9-8-9z"/><path d="M9 12a3 3 0 006 0"/>'},
+];
+const FEAT_LABEL={impermeable:'Impermeable',cortaviento:'Cortaviento',pluma:'Pluma',sintetica:'Sintética',termica:'Térmica',transpirable:'Transpirable',packable:'Packable',capucha:'Capucha'};
+
+function fil(){
+  let r = PRODUCTS.filter(p=>{
+    if(ST.g && !p.g.includes(ST.g)) return false;
+    if(ST.c && !p.c.includes(ST.c)) return false;
+    if(ST.tipo && p.tipo!==ST.tipo) return false;
+    if(ST.feat.length>0 && !ST.feat.some(f=>p.f.includes(f))) return false;
+    return true;
+  });
+  if(ST.sort==='asc') r.sort((a,b)=>a.price-b.price);
+  else if(ST.sort==='desc') r.sort((a,b)=>b.price-a.price);
+  return r;
+}
+function countWith(over){
+  const s=Object.assign({},ST,over);
+  return PRODUCTS.filter(p=>{
+    if(s.g && !p.g.includes(s.g)) return false;
+    if(s.c && !p.c.includes(s.c)) return false;
+    if(s.tipo && p.tipo!==s.tipo) return false;
+    if(s.feat && s.feat.length>0 && !s.feat.some(f=>p.f.includes(f))) return false;
+    return true;
+  }).length;
+}
+function updC(){const n=fil().length;['c1','c2','c3','c4'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=n;});}
+
+function selCard(el){el.closest('.og').querySelectorAll('.oc').forEach(o=>o.classList.remove('sel'));el.classList.add('sel');}
+
+function p1(el){ST.g=el.dataset.val;ST.c=null;ST.tipo=null;ST.feat=[];selCard(el);buildCond();setTimeout(()=>go(2),280);}
+function p2(id,el){ST.c=id;ST.tipo=null;ST.feat=[];selCard(el);buildTipo();setTimeout(()=>go(3),280);}
+function pickTipo(id,el){ST.tipo=id;ST.feat=[];selCard(el);buildFeats();setTimeout(()=>go(4),280);}
+function skipTipo(){ST.tipo=null;ST.feat=[];buildFeats();go(4);}
+function skipFeats(){ST.feat=[];showPLP();}
+
+function buildCond(){
+  const g=document.getElementById('cg');
+  g.innerHTML=COND.map(o=>{
+    const n=countWith({c:o.id,tipo:null,feat:[]});
+    return `<div class="oc${n===0?' disabled':''}" onclick="${n===0?'':`p2('${o.id}',this)`}">
+      <svg class="oic" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">${o.svg}</svg>
+      <span class="ol">${o.l}</span><span class="os">${o.s}</span>
+      <span class="ocount">${n} modelo${n!==1?'s':''}</span></div>`;
+  }).join('');
+}
+function buildTipo(){
+  const tipos=[...new Set(fil().map(p=>p.tipo))];
+  const order=['pluma','sintetica','impermeable','softshell','cortaviento','fleece','nieve','casual','componente','otro'];
+  tipos.sort((a,b)=>order.indexOf(a)-order.indexOf(b));
+  const cols=tipos.length<=2?2:tipos.length<=4?2:3;
+  const g=document.getElementById('tg');g.style.gridTemplateColumns='repeat('+cols+',1fr)';
+  g.innerHTML=tipos.map(t=>{
+    const n=countWith({tipo:t,feat:[]});
+    return `<div class="oc" onclick="pickTipo('${t}',this)">
+      <span class="ol">${TIPO_LABEL[t]||t}</span><span class="os">${TIPO_SUB[t]||''}</span>
+      <span class="ocount">${n} modelo${n!==1?'s':''}</span></div>`;
+  }).join('');
+}
+function buildFeats(){
+  ST.feat=[];
+  const avail=new Set();fil().forEach(p=>p.f.forEach(f=>avail.add(f)));
+  document.getElementById('fc').style.display='none';
+  document.getElementById('fh').textContent='0 de 4 seleccionadas';
+  document.getElementById('fmax').classList.remove('show');
+  document.getElementById('fg').innerHTML=FEATS.map(f=>{
+    const dis=!avail.has(f.id);
+    return `<div class="oc${dis?' disabled':''}" ${dis?'':`onclick="toggleFeat('${f.id}',this)"`} data-fid="${f.id}">
+      <svg class="oic" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">${f.svg}</svg>
+      <span class="ol" style="font-size:13px">${f.l}</span></div>`;
+  }).join('');
+}
+function toggleFeat(v,el){
+  const i=ST.feat.indexOf(v);
+  if(i>=0){ST.feat.splice(i,1);el.classList.remove('sel');}
+  else{if(ST.feat.length>=4){document.getElementById('fmax').classList.add('show');return;}ST.feat.push(v);el.classList.add('sel');}
+  document.getElementById('fmax').classList.toggle('show',ST.feat.length>=4);
+  document.querySelectorAll('#fg .oc:not(.sel):not(.disabled)').forEach(c=>c.classList.toggle('feat-disabled',ST.feat.length>=4));
+  document.getElementById('fh').textContent=ST.feat.length+' de 4 seleccionadas';
+  document.getElementById('fc').style.display=ST.feat.length>0?'block':'none';
+  updC();
+}
+
+function sortBy(s){ST.sort=s;['asc','desc','def'].forEach(k=>document.getElementById('pill-'+k).classList.toggle('active',k===s));renderPLP();}
+function fmtCLP(n){return '$'+n.toLocaleString('es-CL');}
+
+function renderPLP(){
+  const r=fil();
+  document.getElementById('pt').textContent=r.length+' Modelo'+(r.length!==1?'s':'');
+  if(r.length>0){const pr=r.map(p=>p.price),mn=Math.min(...pr),mx=Math.max(...pr);
+    document.getElementById('prange').textContent=mn===mx?'Precio: '+fmtCLP(mn):'Desde '+fmtCLP(mn)+' hasta '+fmtCLP(mx);}
+  const g=document.getElementById('pgrid');
+  if(!r.length){g.innerHTML=`<div class="empty-state"><h4>Sin resultados</h4><p>No encontramos modelos para esta combinación.<br>Ajusta los filtros o empieza de nuevo.</p><button class="btnrestart" onclick="restart()">Comenzar de nuevo</button></div>`;return;}
+  g.innerHTML=r.map(p=>{
+    const match=ST.feat.filter(f=>p.f.includes(f)).map(f=>`<span class="ptag match">${FEAT_LABEL[f]||f}</span>`).join('');
+    const tipoTag=`<span class="ptag tipo">${TIPO_LABEL[p.tipo]||p.tipo}</span>`;
+    const disc=p.disc?`<span class="disc-badge">-${p.disc}</span>`:'';
+    const full=p.pfull?`<span class="pfull">${fmtCLP(p.pfull)}</span>`:'';
+    const colors=p.ncolors>1?`<span class="pcolors">${p.ncolors} colores</span>`:'';
+    return `<div class="pcard">
+      <div class="pimg">${disc}
+        <img src="${p.img}" alt="${p.name}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div class="pimg-fallback"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1"><path d="M12 3c-5 0-8 4-8 9 0 3 2 6 8 9 6-3 8-6 8-9 0-5-3-9-8-9z"/></svg></div>
+      </div>
+      <div class="pbody">
+        <p class="pname">${p.name}</p>
+        <div class="price-row"><span class="pprice">${fmtCLP(p.price)}</span>${full}${colors}</div>
+        <div class="ptags">${tipoTag}${match}</div>
+      </div>
+      <a class="plink" href="${p.url}" target="_blank" rel="noopener">Ver producto &rarr;</a>
+    </div>`;
+  }).join('');
+}
+function showPLP(){renderPLP();go(5);}
+
+function bk(){
+  const p=ST.step-1;if(p<1)return;
+  if(ST.step===4){ST.feat=[];document.getElementById('fc').style.display='none';}
+  if(ST.step===3){ST.tipo=null;}
+  if(ST.step===2){ST.c=null;}
+  if(p===1||p===2){setTimeout(()=>{const v=p===1?ST.g:ST.c;const sid='#s'+p;if(v){const e=document.querySelector(sid+' [data-val="'+v+'"]')||[...document.querySelectorAll(sid+' .oc')].find(x=>x.getAttribute('onclick')&&x.getAttribute('onclick').includes("'"+v+"'"));if(e){document.querySelectorAll(sid+' .oc').forEach(o=>o.classList.remove('sel'));e.classList.add('sel');}}},30);}
+  if(p===4){setTimeout(()=>{document.getElementById('fh').textContent=ST.feat.length+' de 4 seleccionadas';document.getElementById('fc').style.display=ST.feat.length>0?'block':'none';document.querySelectorAll('#fg .oc').forEach(e=>{e.classList.toggle('sel',ST.feat.includes(e.dataset.fid));e.classList.remove('feat-disabled');});},30);}
+  go(p);
+}
+function restart(){ST.g=null;ST.c=null;ST.tipo=null;ST.feat=[];ST.sort='def';ST.step=1;['asc','desc'].forEach(k=>document.getElementById('pill-'+k).classList.remove('active'));document.getElementById('pill-def').classList.add('active');document.querySelectorAll('.oc').forEach(o=>o.classList.remove('sel','feat-disabled'));go(1);}
+
+function updProg(n){
+  document.getElementById('step-label').textContent=n<=4?'Paso '+n+' de 4':'Tu selección';
+  document.querySelectorAll('#prog .pd').forEach(d=>{const ds=+d.dataset.s;d.className='pd'+(ds===n?' on':ds<n?' dn':'');});
+  document.querySelector('.prog-wrap').style.display=n===5?'none':'block';
+}
+function updBC(){
+  const bc=document.getElementById('bc');const parts=[];
+  if(ST.g)parts.push(GEN_LABEL[ST.g]);
+  if(ST.c)parts.push(COND_LABEL[ST.c]);
+  if(ST.tipo)parts.push(TIPO_LABEL[ST.tipo]);
+  else if(ST.step>=3&&ST.c)parts.push('<span style="color:#CCC">Cualquier tipo</span>');
+  if(ST.feat.length>0)parts.push(ST.feat.slice(0,2).map(f=>FEAT_LABEL[f]).join(', ')+(ST.feat.length>2?' +':''));
+  if(!parts.length){bc.innerHTML='';return;}
+  bc.innerHTML=parts.map((p,i)=>'<span class="bc-item'+(i===parts.length-1?' active':'')+'">'+p+'</span>'+(i<parts.length-1?'<span class="bc-sep">\u203A</span>':'')).join('');
+}
+function go(n){document.querySelectorAll('.step').forEach(e=>e.classList.remove('active'));document.getElementById('s'+n).classList.add('active');ST.step=n;updProg(n);updBC();updC();window.scrollTo({top:0,behavior:'smooth'});}
+
+updC();
+</script>
+</body>
+</html>
